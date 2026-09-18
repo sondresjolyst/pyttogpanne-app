@@ -1,0 +1,18 @@
+{
+  "name": "Pyttogpanne",
+  "short_name": "Pyttogpanne",
+  "theme_color": "#00887a",
+  "background_color": "#131313",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/no",
+  "description": "Lokal bygging og installasjon av stasjonære PC-er.",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
