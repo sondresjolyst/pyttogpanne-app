@@ -1,5 +1,6 @@
 import axiosInstance from './axiosInstance';
 import { request } from '@/lib/apiRequest';
+import type { GalleryImage, GalleryImageInput } from './imageService';
 
 export const GEAR_KINDS = ['Utstyr', 'Tips'] as const;
 
@@ -12,9 +13,12 @@ export interface GearItem {
     kind: GearKind;
     summary: string | null;
     body: string;
-    contentImageId: string | null;
+    coverImageId: string | null;
+    images: GalleryImage[];
     sortOrder: number;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser: string | null;
     updatedAt: string;
 }
 
@@ -23,9 +27,11 @@ export interface GearItemInput {
     kind: GearKind;
     summary?: string | null;
     body: string;
-    contentImageId?: string | null;
+    images: GalleryImageInput[];
     sortOrder: number;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser?: string | null;
 }
 
 const GearService = {

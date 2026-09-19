@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { ArrowDownIcon, ArrowUpIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import TextInput from '@/components/TextInput';
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
-import ContentImage from '@/components/ContentImage';
+import ImageGalleryEditor from '@/components/ImageGalleryEditor';
+import AdvertisingFields from '@/components/AdvertisingFields';
 import RecipeService, {
     DIFFICULTIES,
     type Difficulty,
@@ -16,9 +17,10 @@ import RecipeService, {
     type RecipeInput,
 } from '@/services/recipeService';
 import RecipeCategoryService from '@/services/recipeCategoryService';
-import ImageService from '@/services/imageService';
+import { toGalleryInput, type GalleryImageInput } from '@/services/imageService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
+import { move } from '@/lib/arrays';
 
 interface IngredientRow {
     groupName: string;
@@ -38,22 +40,12 @@ const emptyStep = (): StepRow => ({ text: '', contentImageId: null });
 
 const blank = (value: string): string | null => (value.trim() === '' ? null : value.trim());
 
-function move<T>(rows: T[], from: number, to: number): T[] {
-    if (to < 0 || to >= rows.length) return rows;
-    const next = [...rows];
-    const [row] = next.splice(from, 1);
-    next.splice(to, 0, row);
-    return next;
-}
-
 export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
     const { locale, dict } = useDictionary();
     const router = useRouter();
-    const coverInput = useRef<HTMLInputElement>(null);
 
     const [categories, setCategories] = useState<RecipeCategory[]>([]);
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
 
     const [title, setTitle] = useState(recipe?.title ?? '');
     const [intro, setIntro] = useState(recipe?.intro ?? '');
@@ -62,8 +54,12 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
     const [cookMinutes, setCookMinutes] = useState(recipe?.cookMinutes?.toString() ?? '');
     const [difficulty, setDifficulty] = useState<Difficulty>(recipe?.difficulty ?? 'Enkel');
     const [tips, setTips] = useState(recipe?.tips ?? '');
-    const [coverImageId, setCoverImageId] = useState<string | null>(recipe?.coverImageId ?? null);
+    const [images, setImages] = useState<GalleryImageInput[]>(
+        recipe ? toGalleryInput(recipe.images) : [],
+    );
     const [isPublished, setIsPublished] = useState(recipe?.isPublished ?? false);
+    const [isAdvertising, setIsAdvertising] = useState(recipe?.isAdvertising ?? false);
+    const [advertiser, setAdvertiser] = useState(recipe?.advertiser ?? '');
     const [categoryIds, setCategoryIds] = useState<number[]>(recipe?.categories.map(c => c.id) ?? []);
     const [ingredients, setIngredients] = useState<IngredientRow[]>(
         recipe?.ingredients.map(i => ({
@@ -90,18 +86,6 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
     const patchStep = (index: number, patch: Partial<StepRow>) =>
         setSteps(rows => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
 
-    const uploadCover = async (file: File) => {
-        setUploading(true);
-        try {
-            const image = await ImageService.upload(file);
-            setCoverImageId(image.id);
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : dict.admin.uploadFailed);
-        } finally {
-            setUploading(false);
-        }
-    };
-
     const save = async () => {
         const named = ingredients.filter(i => i.name.trim() !== '');
         const written = steps.filter(s => s.text.trim() !== '');
@@ -118,8 +102,10 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
             cookMinutes: cookMinutes.trim() === '' ? null : Number(cookMinutes),
             difficulty,
             tips: blank(tips),
-            coverImageId,
+            images,
             isPublished,
+            isAdvertising,
+            advertiser: blank(advertiser),
             categoryIds,
             ingredients: named.map(i => ({
                 groupName: blank(i.groupName),
@@ -206,46 +192,8 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
             </section>
 
             <section>
-                <h2 className="font-bold text-gray-900 mb-3">{dict.admin.coverImage}</h2>
-                <div className="flex items-center gap-4">
-                    {coverImageId ? (
-                        <ContentImage imageId={coverImageId} alt="" sizes="160px" className="h-24 w-32 rounded-lg object-cover" />
-                    ) : (
-                        <div className="flex h-24 w-32 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400">
-                            <PhotoIcon className="h-6 w-6" />
-                        </div>
-                    )}
-                    <div className="flex gap-2">
-                        <button
-                            type="button"
-                            onClick={() => coverInput.current?.click()}
-                            disabled={uploading}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 disabled:opacity-50"
-                        >
-                            {uploading ? dict.admin.uploading : dict.admin.addImage}
-                        </button>
-                        {coverImageId && (
-                            <button
-                                type="button"
-                                onClick={() => setCoverImageId(null)}
-                                className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:border-gray-400"
-                            >
-                                {dict.common.remove}
-                            </button>
-                        )}
-                    </div>
-                    <input
-                        ref={coverInput}
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        onChange={e => {
-                            const file = e.target.files?.[0];
-                            if (file) uploadCover(file);
-                            e.target.value = '';
-                        }}
-                    />
-                </div>
+                <h2 className="font-bold text-gray-900 mb-1">{dict.admin.gallery}</h2>
+                <ImageGalleryEditor images={images} onChange={setImages} />
             </section>
 
             <section>
@@ -323,6 +271,11 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
 
             <section className="space-y-4">
                 <TextArea label={dict.recipes.tips} value={tips} onChange={e => setTips(e.target.value)} />
+                <AdvertisingFields
+                    isAdvertising={isAdvertising}
+                    advertiser={advertiser}
+                    onChange={value => { setIsAdvertising(value.isAdvertising); setAdvertiser(value.advertiser); }}
+                />
                 <Toggle checked={isPublished} onChange={setIsPublished} label={dict.admin.published} />
             </section>
 

@@ -24,9 +24,9 @@ describe('ContentImage', () => {
     });
 
     it('serves the static fallback as-is, with no renditions to choose from', () => {
-        render(<ContentImage imageId={null} fallbackSrc="/hero.jpg" alt="" sizes="100vw" />);
+        render(<ContentImage imageId={null} fallbackSrc="/logo.png" alt="" sizes="100vw" />);
         const image = document.querySelector('img')!;
-        expect(image).toHaveAttribute('src', '/hero.jpg');
+        expect(image).toHaveAttribute('src', '/logo.png');
         expect(image).not.toHaveAttribute('srcset');
         expect(image).not.toHaveAttribute('sizes');
     });

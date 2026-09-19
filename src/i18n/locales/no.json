@@ -21,9 +21,7 @@
     "edit": "Rediger",
     "add": "Legg til",
     "close": "Lukk",
-    "viewAll": "Se alle",
     "back": "Tilbake",
-    "yes": "Ja",
     "no": "Nei",
     "notFound": "Fant ikke siden",
     "notFoundBody": "Siden finnes ikke, eller den er flyttet.",
@@ -34,7 +32,6 @@
     "somethingWentWrong": "Noe gikk galt. Prøv igjen.",
     "remove": "Fjern",
     "show": "Vis",
-    "hide": "Skjul",
     "actionFailed": "Handlingen feilet"
   },
   "validation": {
@@ -65,8 +62,7 @@
     "terms": "Vilkår",
     "privacy": "Personvern",
     "cookies": "Informasjonskapsler",
-    "rights": "Alle rettigheter reservert.",
-    "createdBy": "Laget av"
+    "operatedBy": "Drives av"
   },
   "legal": {
     "missing": "Dette innholdet er ikke lagt inn ennå.",
@@ -107,7 +103,6 @@
     "settings": "Innstillinger",
     "stats": "Statistikk",
     "language": "Språk",
-
     "cardRecipes": "Opprett, rediger og publiser oppskrifter.",
     "cardCategories": "Kategoriene oppskriftene sorteres i.",
     "cardGear": "Utstyr og turtips til appen.",
@@ -115,7 +110,6 @@
     "cardStats": "Totaler, trender, lagring og e-post.",
     "cardUsers": "Inviter brukere og styr roller.",
     "cardSettings": "Firmaopplysninger og kontaktmottaker.",
-
     "newRecipe": "Ny oppskrift",
     "editRecipe": "Rediger oppskrift",
     "recipeTitle": "Tittel",
@@ -136,11 +130,9 @@
     "ingredientAmount": "Mengde",
     "ingredientUnit": "Enhet",
     "ingredientName": "Ingrediens",
-    "ingredientNote": "Merknad",
     "ingredientGroup": "Gruppe",
     "ingredientGroupHint": "Valgfri overskrift, for eksempel «Til dressingen».",
     "stepText": "Steg",
-
     "newGearItem": "Nytt utstyr",
     "editGearItem": "Rediger utstyr",
     "gearSaved": "Utstyret er lagret",
@@ -150,7 +142,6 @@
     "gearDeleteFailed": "Kunne ikke slette utstyret",
     "noGear": "Ingen utstyr eller turtips ennå.",
     "confirmDeleteGear": "Slette «{title}»?",
-
     "categoryAdded": "Kategorien er lagt til",
     "categoryUpdated": "Kategorien er oppdatert",
     "categoryDeleted": "Kategorien er slettet",
@@ -160,14 +151,11 @@
     "categoryKeyRequired": "Nøkkel må fylles ut",
     "categoryKeyHint": "Små bokstaver, tall og bindestrek. Brukes i lenker og kan ikke inneholde mellomrom.",
     "categoriesHint": "Kategoriene vises som filtre i appen.",
-
     "name": "Navn",
-    "details": "Detaljer",
     "gallery": "Bilder",
     "addImage": "Legg til bilde",
     "uploading": "Laster opp…",
     "uploadFailed": "Kunne ikke laste opp bildene",
-    "noImages": "Ingen bilder ennå.",
     "markdownHint": "Markdown er støttet.",
     "coverImage": "Forsidebilde",
     "published": "Publisert",
@@ -176,22 +164,13 @@
     "confirmDelete": "Er du sikker?",
     "moveUp": "Flytt opp",
     "moveDown": "Flytt ned",
-    "moveLeft": "Flytt til venstre",
-    "moveRight": "Flytt til høyre",
-    "previousImage": "Forrige bilde",
-    "nextImage": "Neste bilde",
     "notFilled": "Ikke fylt ut",
-    "reset": "Tilbakestill",
-
     "legalSaved": "Siden er lagret",
     "legalSaveFailed": "Kunne ikke lagre siden",
     "legalLoadFailed": "Kunne ikke laste sidene",
     "legalRequired": "Tittel og innhold må fylles ut",
     "bodyMarkdown": "Innhold (markdown)",
-    "perLanguageHint": "Hvert språk lagres for seg. Lagre etter at du har endret en fane.",
-
     "inviteUser": "Inviter bruker",
-    "inviteSent": "Invitasjon sendt.",
     "inviteSentLong": "Invitasjon sendt. Brukeren får en kode for å sette passord.",
     "inviteHint": "Brukeren får en e-post med en kode og setter passordet selv på siden for glemt passord.",
     "inviteFailed": "Kunne ikke sende invitasjonen",
@@ -214,7 +193,6 @@
     "showDeleted": "Vis slettede",
     "deletedTag": "slettet",
     "confirmDeleteUser": "Slette {name}? Navn, e-post og passord blir fjernet, og brukeren kan ikke logge inn igjen.",
-
     "settingsSaved": "Innstillingene er lagret",
     "settingsSaveFailed": "Kunne ikke lagre",
     "settingsLoadFailed": "Kunne ikke laste innstillingene",
@@ -233,7 +211,6 @@
     "addressHint": "Postnummer og poststed holdes atskilt slik at søkemotorer kan lese adressen. Fylke er valgfritt.",
     "publicEmail": "E-post som vises utad",
     "publicPhone": "Telefon som vises utad",
-
     "statsLoadFailed": "Kunne ikke laste statistikk",
     "overTime": "Over tid",
     "noHistory": "Ingen historikk ennå — se innom i morgen.",
@@ -247,7 +224,13 @@
     "emailBounces": "Returnert",
     "emailBlocked": "Blokkert / spam",
     "unavailable": "Utilgjengelig.",
-    "drafts": "Utkast"
+    "drafts": "Utkast",
+    "galleryHint": "Det første bildet blir forsidebilde. Endre rekkefølgen med pilene.",
+    "caption": "Bildetekst",
+    "advertising": "Merk som reklame",
+    "advertisingHint": "Har du fått utstyret eller ingrediensene gratis, med rabatt eller betalt for omtalen, skal innholdet merkes som reklame. Det gjelder også uten avtale, så lenge giveren venter omtale. Appen viser «Reklame» øverst, slik Forbrukertilsynet krever.",
+    "advertiser": "Annonsør",
+    "advertiserHint": "Navnet på den som har gitt eller betalt. Vises ved siden av merkingen."
   },
   "stats": {
     "recipes": "Oppskrifter publisert",

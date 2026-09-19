@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { PencilSquareIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import TextInput from '@/components/TextInput';
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
-import ContentImage from '@/components/ContentImage';
+import ImageGalleryEditor from '@/components/ImageGalleryEditor';
+import AdvertisingFields from '@/components/AdvertisingFields';
 import GearService, { GEAR_KINDS, type GearItem, type GearItemInput, type GearKind } from '@/services/gearService';
-import ImageService from '@/services/imageService';
+import { toGalleryInput } from '@/services/imageService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 
 const emptyDraft = (sortOrder: number): GearItemInput => ({
@@ -16,19 +17,19 @@ const emptyDraft = (sortOrder: number): GearItemInput => ({
     kind: 'Utstyr',
     summary: '',
     body: '',
-    contentImageId: null,
+    images: [],
     sortOrder,
     isPublished: false,
+    isAdvertising: false,
+    advertiser: '',
 });
 
 export default function AdminGearPage() {
     const { dict } = useDictionary();
-    const fileInput = useRef<HTMLInputElement>(null);
     const [items, setItems] = useState<GearItem[] | null>(null);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [draft, setDraft] = useState<GearItemInput>(emptyDraft(10));
     const [saving, setSaving] = useState(false);
-    const [uploading, setUploading] = useState(false);
 
     const load = () =>
         GearService.list()
@@ -49,22 +50,12 @@ export default function AdminGearPage() {
             kind: item.kind,
             summary: item.summary ?? '',
             body: item.body,
-            contentImageId: item.contentImageId,
+            images: toGalleryInput(item.images),
             sortOrder: item.sortOrder,
             isPublished: item.isPublished,
+            isAdvertising: item.isAdvertising,
+            advertiser: item.advertiser ?? '',
         });
-    };
-
-    const upload = async (file: File) => {
-        setUploading(true);
-        try {
-            const image = await ImageService.upload(file);
-            setDraft(d => ({ ...d, contentImageId: image.id }));
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : dict.admin.uploadFailed);
-        } finally {
-            setUploading(false);
-        }
     };
 
     const save = async () => {
@@ -125,43 +116,13 @@ export default function AdminGearPage() {
                 <TextArea label={dict.gear.body} required value={draft.body} onChange={e => setDraft({ ...draft, body: e.target.value })} />
                 <p className="text-xs text-gray-500">{dict.admin.markdownHint}</p>
 
-                <div className="flex items-center gap-4">
-                    {draft.contentImageId ? (
-                        <ContentImage imageId={draft.contentImageId} alt="" sizes="128px" className="h-20 w-28 rounded-lg object-cover" />
-                    ) : (
-                        <div className="flex h-20 w-28 items-center justify-center rounded-lg border border-dashed border-gray-300 text-gray-400">
-                            <PhotoIcon className="h-6 w-6" />
-                        </div>
-                    )}
-                    <button
-                        type="button"
-                        onClick={() => fileInput.current?.click()}
-                        disabled={uploading}
-                        className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 disabled:opacity-50"
-                    >
-                        {uploading ? dict.admin.uploading : dict.admin.addImage}
-                    </button>
-                    {draft.contentImageId && (
-                        <button
-                            type="button"
-                            onClick={() => setDraft({ ...draft, contentImageId: null })}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:border-gray-400"
-                        >
-                            {dict.common.remove}
-                        </button>
-                    )}
-                    <input
-                        ref={fileInput}
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        onChange={e => {
-                            const file = e.target.files?.[0];
-                            if (file) upload(file);
-                            e.target.value = '';
-                        }}
-                    />
-                </div>
+                <ImageGalleryEditor images={draft.images} onChange={images => setDraft(current => ({ ...current, images }))} />
+
+                <AdvertisingFields
+                    isAdvertising={draft.isAdvertising}
+                    advertiser={draft.advertiser ?? ''}
+                    onChange={value => setDraft(current => ({ ...current, ...value }))}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                     <TextInput label={dict.admin.sortOrder} type="number" value={draft.sortOrder} onChange={e => setDraft({ ...draft, sortOrder: Number(e.target.value) })} />

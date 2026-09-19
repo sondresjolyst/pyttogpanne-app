@@ -1,5 +1,6 @@
 import axiosInstance from './axiosInstance';
 import { request } from '@/lib/apiRequest';
+import type { GalleryImage, GalleryImageInput } from './imageService';
 
 export const DIFFICULTIES = ['Enkel', 'Middels', 'Avansert'] as const;
 
@@ -39,6 +40,8 @@ export interface RecipeSummary {
     difficulty: Difficulty;
     coverImageId: string | null;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser: string | null;
     updatedAt: string;
     categories: RecipeCategory[];
 }
@@ -50,6 +53,7 @@ export interface RecipeDetail extends RecipeSummary {
     publishedAt: string | null;
     ingredients: RecipeIngredient[];
     steps: RecipeStep[];
+    images: GalleryImage[];
 }
 
 export interface RecipeIngredientInput {
@@ -73,11 +77,13 @@ export interface RecipeInput {
     cookMinutes?: number | null;
     difficulty: Difficulty;
     tips?: string | null;
-    coverImageId?: string | null;
     isPublished: boolean;
+    isAdvertising: boolean;
+    advertiser?: string | null;
     categoryIds: number[];
     ingredients: RecipeIngredientInput[];
     steps: RecipeStepInput[];
+    images: GalleryImageInput[];
 }
 
 const RecipeService = {
