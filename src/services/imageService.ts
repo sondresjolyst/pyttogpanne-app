@@ -7,6 +7,23 @@ export interface UploadedImage {
     url: string;
 }
 
+/** A photo on a recipe or a gear item, as the API returns it. */
+export interface GalleryImage {
+    id: number;
+    contentImageId: string;
+    sortOrder: number;
+    caption: string | null;
+}
+
+/** A photo as an editor sends it back. List order is the order shown; the first is the cover. */
+export interface GalleryImageInput {
+    contentImageId: string;
+    caption?: string | null;
+}
+
+export const toGalleryInput = (images: GalleryImage[]): GalleryImageInput[] =>
+    images.map(image => ({ contentImageId: image.contentImageId, caption: image.caption ?? '' }));
+
 /** Where the browser fetches an uploaded image. Site-relative; see the rewrite in next.config.ts. */
 export const imagePath = (id: string): string => `/content-images/${id}`;
 
