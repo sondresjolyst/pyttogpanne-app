@@ -133,6 +133,7 @@
     "ingredientGroup": "Gruppe",
     "ingredientGroupHint": "Valgfri overskrift, for eksempel «Til dressingen».",
     "stepText": "Steg",
+    "stepImage": "Bilde til steget",
     "newGearItem": "Nytt utstyr",
     "editGearItem": "Rediger utstyr",
     "gearSaved": "Utstyret er lagret",

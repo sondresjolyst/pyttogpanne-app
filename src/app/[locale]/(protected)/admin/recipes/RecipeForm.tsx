@@ -8,6 +8,7 @@ import TextInput from '@/components/TextInput';
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
 import ImageGalleryEditor from '@/components/ImageGalleryEditor';
+import StepImagePicker from '@/components/StepImagePicker';
 import AdvertisingFields from '@/components/AdvertisingFields';
 import RecipeService, {
     DIFFICULTIES,
@@ -245,6 +246,12 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
                             <span className="pb-3 text-sm font-semibold text-gray-400 tabular-nums w-6">{index + 1}.</span>
                             <div className="flex-1">
                                 <TextArea label={dict.admin.stepText} value={row.text} onChange={e => patchStep(index, { text: e.target.value })} />
+                            </div>
+                            <div className="pb-1">
+                                <StepImagePicker
+                                    contentImageId={row.contentImageId}
+                                    onChange={contentImageId => patchStep(index, { contentImageId })}
+                                />
                             </div>
                             <div className="flex gap-1 pb-1">
                                 <button type="button" aria-label={dict.admin.moveUp} onClick={() => setSteps(rows => move(rows, index, index - 1))} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-gray-400">
