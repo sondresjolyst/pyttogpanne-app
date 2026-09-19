@@ -21,9 +21,6 @@ export default function Footer({ company }: { company: CompanyInfo }) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={logoUrl ?? '/logo.png'} alt="" className="h-7 w-7 rounded-md object-cover" />
                     <span className="text-sm font-semibold text-gray-900">{company.name}</span>
-                    {company.orgNumber && (
-                        <span className="text-xs text-gray-500">{dict.footer.orgNumber} {formatOrgNumber(company)}</span>
-                    )}
                 </div>
 
                 <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-gray-600">
@@ -36,8 +33,9 @@ export default function Footer({ company }: { company: CompanyInfo }) {
                 </nav>
 
                 <p className="text-xs text-gray-400">
-                    © {year} {company.name} · {dict.footer.createdBy}{' '}
-                    <span className="text-gray-500">Sjølyst Innovations</span>
+                    © {year} {company.name} · {dict.footer.operatedBy}{' '}
+                    <span className="text-gray-500">{company.legalName}</span>
+                    {company.orgNumber && ` · ${dict.footer.orgNumber} ${formatOrgNumber(company)}`}
                 </p>
             </div>
         </footer>
