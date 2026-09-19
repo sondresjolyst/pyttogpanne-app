@@ -16,8 +16,9 @@ and the mobile app reads them from
 ## What's in it
 
 - **Recipes** — an editor for ingredients and steps in order, with times,
-  servings, difficulty, categories and a cover photo. Saved as a draft until it
-  is published to the app.
+  servings, difficulty, categories and photos. Content that came from a gift,
+  discount or payment is marked as advertising. Saved as a draft until it is
+  published to the app.
 - **Categories** — the filters recipes are listed under.
 - **Gear and trail tips** — markdown articles alongside the recipes.
 - **Legal pages** — terms, privacy and cookies, per language.
