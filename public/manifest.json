@@ -1,12 +1,12 @@
 {
   "name": "Pyttogpanne",
   "short_name": "Pyttogpanne",
-  "theme_color": "#00887a",
-  "background_color": "#131313",
+  "theme_color": "#4A3726",
+  "background_color": "#F5F1E6",
   "display": "standalone",
   "scope": "/",
-  "start_url": "/no",
-  "description": "Lokal bygging og installasjon av stasjonære PC-er.",
+  "start_url": "/no/admin",
+  "description": "Administrasjon av oppskrifter, kategorier og utstyrstips for Pyttogpanne.",
   "icons": [
     {
       "src": "icon.png",
