@@ -2,96 +2,104 @@
   <img src="docs/pyttogpanne.png" alt="Pyttogpanne" width="220">
 </p>
 
-<p align="center">
-  The admin console for Pyttogpanne — where the recipes in the app are written.
-</p>
+# pyttogpanne-app
 
----
+Admin console for Pyttogpanne, where the recipes the mobile app shows are
+written. Content is stored in
+[pyttogpanne-api](https://github.com/sondresjolyst/pyttogpanne-api) and read by
+[pyttogpanne-mobile](https://github.com/sondresjolyst/pyttogpanne-mobile).
 
-pyttogpanne-app is the admin console for **Pyttogpanne** — turmat cooked in one
-pan on a gas burner. Pyttogpanne writes recipes, gear tips and site text here,
-and the mobile app reads them from
-[pyttogpanne-api](https://github.com/sondresjolyst/pyttogpanne-api).
+## Stack
 
-## What's in it
+Next.js 16 App Router, TypeScript, Tailwind CSS 4, next-auth, Axios, Vitest.
 
-- **Recipes** — an editor for ingredients and steps in order, with times,
-  servings, difficulty, categories and photos. Content that came from a gift,
-  discount or payment is marked as advertising. Saved as a draft until it is
-  published to the app.
-- **Categories** — the filters recipes are listed under.
-- **Gear and trail tips** — markdown articles alongside the recipes.
-- **Legal pages** — terms, privacy and cookies, per language.
-- **Users, settings and statistics** — invitations and roles, company details,
-  totals and daily history.
+## Quick start
 
-Sign-in is admin-only; there is no public registration. The legal pages are the
-only routes a visitor can reach.
+```bash
+npm ci
+cp .env.example .env
+npm run dev
+```
+
+pyttogpanne-api must be running and reachable at `NEXT_PUBLIC_API_URL`.
+`npm run build` prerenders the legal pages against it and fails when it is
+unreachable.
+
+## Scripts
+
+| Command | Does |
+| --- | --- |
+| `npm run dev` | Development server on port 3000 |
+| `npm run build` | Production build |
+| `npm start` | Serves the production build |
+| `npm test` | Vitest |
+| `npm run lint` | ESLint |
+
+## Environment
+
+| Variable | Used for |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the API, for example `http://localhost:7297/api` |
+| `NEXTAUTH_URL` | URL of this app |
+| `NEXTAUTH_SECRET` | next-auth session secret |
+| `PYTTOGPANNE_API_JWT_SECRET` | Must match the API's `Jwt__Key` |
+
+## Content
+
+| Area | Holds |
+| --- | --- |
+| Recipes | Ingredients and ordered steps, times, servings, difficulty, categories, photos. Content from a gift, discount or payment is marked as advertising. Saved as a draft until published |
+| Categories | Filters recipes are listed under |
+| Articles | Gear and trail tips, written in markdown |
+| Legal pages | Terms, privacy and cookies, per language |
+| Users, settings, statistics | Invitations and roles, company details, totals and daily history |
+
+Sign-in is admin only and there is no public registration. The legal pages are
+the only routes a visitor can reach.
 
 ## Languages
 
-Every page lives under a locale segment — `/no/...` — and `/` redirects to
-Norwegian. UI strings come from `src/i18n/locales/*.json`; legal text is stored
+Every page lives under a locale segment, `/no/...`, and `/` redirects to
+Norwegian. UI strings come from `src/i18n/locales/*.json`. Legal text is stored
 per language in the API.
 
-To add a language: add its tag to `LOCALES` in `src/i18n/config.ts`, drop in a
+To add a language: add its tag to `LOCALES` in `src/i18n/config.ts`, add a
 dictionary file next to the others, add the same tag to `Locales.Supported` in
-the API, and seed its legal text.
+the API, then seed its legal text.
 
----
-
-## For developers
-
-<details>
-<summary>Run, build, and test from source</summary>
-
-### Stack
-
-Next.js (App Router) · TypeScript · Tailwind CSS · next-auth · Axios · Vitest.
-
-### Run locally
-
-```bash
-npm install
-cp .env.example .env   # set NEXTAUTH_SECRET and PYTTOGPANNE_API_JWT_SECRET (= the API's Jwt__Key)
-npm run dev            # http://localhost:3000
-```
-
-[pyttogpanne-api](https://github.com/sondresjolyst/pyttogpanne-api) must be running and
-reachable at `NEXT_PUBLIC_API_URL`. `npm run build` prerenders the legal pages against it and
-fails when it is unreachable.
-
-### Environment
-
-| Variable | What it's for |
-| --- | --- |
-| `NEXT_PUBLIC_API_URL` | Base URL of the API (e.g. `http://localhost:7297/api`). |
-| `NEXTAUTH_URL` | This app's URL (e.g. `http://localhost:3000`). |
-| `NEXTAUTH_SECRET` | next-auth session secret. |
-| `PYTTOGPANNE_API_JWT_SECRET` | Must match the API's `Jwt__Key` (verifies its tokens). |
-
-### Scripts
-
-```bash
-npm run dev     # dev server (Turbopack)
-npm run build   # production build
-npm start       # serve the production build
-npm run lint    # ESLint
-npm test        # Vitest
-```
-
-### Layout
+## Layout
 
 ```
 src/
-├── app/[locale]/ # routes — legal pages, (auth), (protected)/admin
+├── app/[locale]/ # routes: legal pages, (auth), (protected)/admin
 ├── app/api/      # route handlers (next-auth, revalidation)
 ├── components/   # shared UI
 ├── i18n/         # locale config, dictionaries, client provider
-├── services/     # API clients (one per domain)
-├── lib/          # helpers (company info, fetch wrappers, cache tags, formatting)
+├── services/     # API clients, one per domain
+├── lib/          # company info, fetch wrappers, cache tags, formatting
 ├── types/        # shared types
 └── proxy.ts      # locale redirect for unprefixed paths
 ```
 
-</details>
+## Deployment
+
+Image [`sondresjo/pyttogpanne-app`](https://hub.docker.com/r/sondresjo/pyttogpanne-app)
+on Docker Hub, chart `pyttogpanne-app` in
+[tumogroup-charts](https://github.com/sondresjolyst/tumogroup-charts), applied by
+Flux from [tumo-flux](https://github.com/sondresjolyst/tumo-flux) to
+`pyttogpanne-dev` and `pyttogpanne-prod`.
+
+The container runs as the non-root `node` user with a read-only root filesystem,
+so anything written at runtime needs a volume. The incremental cache is kept in
+memory for that reason.
+
+A push to `main` builds the `dev` tag. A release-please release builds `vX.Y.Z`,
+tags it `latest` and opens a chart bump against
+[tumogroup-charts](https://github.com/sondresjolyst/tumogroup-charts). Cluster
+secrets are created by
+[`scripts/pyttogpanne/bootstrap.sh`](https://github.com/sondresjolyst/tumo-platform/blob/main/scripts/pyttogpanne/bootstrap.sh)
+in [tumo-platform](https://github.com/sondresjolyst/tumo-platform).
+
+## License
+
+Proprietary. Copyright (c) 2026 Sondre Sjølyst.
