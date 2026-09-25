@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.0...v1.0.1) (2026-09-25)
+
+
+### Bug Fixes
+
+* harden the image and the response headers ([#16](https://github.com/sondresjolyst/pyttogpanne-app/issues/16)) ([229e340](https://github.com/sondresjolyst/pyttogpanne-app/commit/229e3406f2e39e0053b60f769d7861743b2b6e55))
+
 ## 1.0.0 (2026-09-19)
 
 
