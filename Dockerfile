@@ -1,4 +1,4 @@
-FROM node:26.8.2-slim AS builder
+FROM node:26.10.0-slim AS builder
 
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
@@ -10,9 +10,9 @@ ENV SITE_ENV=${SITE_ENV}
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
@@ -20,7 +20,7 @@ ENV NODE_ENV=production
 
 RUN npm run build
 
-FROM node:26.8.2-slim AS runner
+FROM node:26.10.0-slim AS runner
 
 WORKDIR /app
 
