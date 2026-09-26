@@ -34,7 +34,14 @@ export default function Footer({ company }: { company: CompanyInfo }) {
 
                 <p className="text-xs text-gray-400">
                     © {year} {company.name} · {dict.footer.operatedBy}{' '}
-                    <span className="text-gray-500">{company.legalName}</span>
+                    <a
+                        href="https://www.sjolystinnovation.no/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-gray-900 hover:underline"
+                    >
+                        {company.legalName}
+                    </a>
                     {company.orgNumber && ` · ${dict.footer.orgNumber} ${formatOrgNumber(company)}`}
                 </p>
             </div>
