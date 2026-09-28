@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.3](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.2...v1.0.3) (2026-09-27)
+
+
+### Dependencies
+
+* **npm:** bump @types/node from 26.5.1 to 26.6.2 in the types group ([#23](https://github.com/sondresjolyst/pyttogpanne-app/issues/23)) ([45d0ef0](https://github.com/sondresjolyst/pyttogpanne-app/commit/45d0ef0f95648bfe7e2c6a5aa4d0543b7a5b4383))
+* **npm:** bump eslint from 10.10.0 to 10.11.0 in the eslint group ([#21](https://github.com/sondresjolyst/pyttogpanne-app/issues/21)) ([681735d](https://github.com/sondresjolyst/pyttogpanne-app/commit/681735d6c17b777c161e371ff1dadd0102d4e949))
+* **npm:** bump the testing group with 2 updates ([#22](https://github.com/sondresjolyst/pyttogpanne-app/issues/22)) ([6bc42e0](https://github.com/sondresjolyst/pyttogpanne-app/commit/6bc42e0eb49f8a4ca3b5b9b37cb32a8352a145c0))
+
 ## [1.0.2](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.1...v1.0.2) (2026-09-26)
 
 
