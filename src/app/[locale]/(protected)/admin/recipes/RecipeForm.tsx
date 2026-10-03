@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Alert from '@/components/Alert';
@@ -45,6 +46,7 @@ const blank = (value: string): string | null => (value.trim() === '' ? null : va
 export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
     const { locale, dict } = useDictionary();
     const router = useRouter();
+    const { data: session } = useSession();
 
     const [categories, setCategories] = useState<RecipeCategory[]>([]);
     const [saving, setSaving] = useState(false);
@@ -86,7 +88,10 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
         title, intro, servings, prepMinutes, cookMinutes, difficulty, tips, images,
         isPublished, isAdvertising, advertiser, categoryIds, ingredients, steps,
     };
-    const draft = useFormDraft(`recipe:${recipe?.id ?? 'new'}`, values);
+    // Scoped to the signed-in user: a shared browser profile must not offer one admin the
+    // draft another one left behind.
+    const userId = session?.user?.id;
+    const draft = useFormDraft(userId ? `${userId}:recipe:${recipe?.id ?? 'new'}` : null, values);
 
     // One setter per persisted field, checked by the compiler: adding a field to `values`
     // without one here is an error rather than a field that silently fails to restore.

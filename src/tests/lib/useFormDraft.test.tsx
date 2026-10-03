@@ -6,9 +6,9 @@ import { useFormDraft } from '@/lib/useFormDraft';
 
 const KEY = 'pyttogpanne:draft:test-form';
 
-function Form({ initialTitle = '' }: { initialTitle?: string }) {
+function Form({ initialTitle = '', formKey = 'test-form' }: { initialTitle?: string; formKey?: string | null }) {
     const [title, setTitle] = useState(initialTitle);
-    const draft = useFormDraft('test-form', { title });
+    const draft = useFormDraft(formKey, { title });
 
     return (
         <div>
@@ -34,8 +34,11 @@ function Form({ initialTitle = '' }: { initialTitle?: string }) {
 
 const stored = () => {
     const raw = window.localStorage.getItem(KEY);
-    return raw == null ? null : JSON.parse(raw);
+    return raw == null ? null : JSON.parse(raw).value;
 };
+
+const storedAt = (value: unknown, savedAt = Date.now()) =>
+    window.localStorage.setItem(KEY, JSON.stringify({ savedAt, value }));
 
 const settle = async () => {
     await act(async () => {
@@ -61,7 +64,7 @@ describe('useFormDraft', () => {
     });
 
     it('offers a stored draft instead of applying it', async () => {
-        window.localStorage.setItem(KEY, JSON.stringify({ title: 'Halvferdig' }));
+        storedAt({ title: 'Halvferdig' });
         render(<Form />);
 
         expect(await screen.findByText('draft waiting: Halvferdig')).toBeInTheDocument();
@@ -69,7 +72,7 @@ describe('useFormDraft', () => {
     });
 
     it('leaves an unanswered offer alone while the form sits untouched', async () => {
-        window.localStorage.setItem(KEY, JSON.stringify({ title: 'Halvferdig' }));
+        storedAt({ title: 'Halvferdig' });
         render(<Form />);
         await settle();
 
@@ -79,7 +82,7 @@ describe('useFormDraft', () => {
     it('still saves new typing while the offer is unanswered', async () => {
         // The reason the offer is held in memory rather than gating the writer: an admin who
         // ignores the banner and types a whole recipe must not end up with nothing stored.
-        window.localStorage.setItem(KEY, JSON.stringify({ title: 'Halvferdig' }));
+        storedAt({ title: 'Halvferdig' });
         render(<Form />);
 
         await userEvent.type(await screen.findByLabelText('title'), 'Noe nytt');
@@ -90,7 +93,7 @@ describe('useFormDraft', () => {
     });
 
     it('restores the offered draft when the user asks for it', async () => {
-        window.localStorage.setItem(KEY, JSON.stringify({ title: 'Halvferdig' }));
+        storedAt({ title: 'Halvferdig' });
         render(<Form />);
 
         await userEvent.click(await screen.findByRole('button', { name: 'restore' }));
@@ -101,7 +104,7 @@ describe('useFormDraft', () => {
     });
 
     it('drops the draft when the user discards it', async () => {
-        window.localStorage.setItem(KEY, JSON.stringify({ title: 'Halvferdig' }));
+        storedAt({ title: 'Halvferdig' });
         render(<Form />);
 
         await userEvent.click(await screen.findByRole('button', { name: 'discard' }));
@@ -125,5 +128,47 @@ describe('useFormDraft', () => {
         await userEvent.click(screen.getByRole('button', { name: 'saved' }));
 
         expect(stored()).toBeNull();
+    });
+
+    it('forgets a draft the user abandoned weeks ago', async () => {
+        storedAt({ title: 'Glemt' }, Date.now() - 8 * 24 * 60 * 60 * 1000);
+        render(<Form />);
+        await settle();
+
+        // Unpublished work should not sit in the browser indefinitely, and an eight-day-old
+        // draft is not something the user still wants offered.
+        expect(screen.queryByText(/draft waiting/)).not.toBeInTheDocument();
+        expect(window.localStorage.getItem(KEY)).toBeNull();
+    });
+
+    it('ignores a stored value it cannot make sense of', async () => {
+        window.localStorage.setItem(KEY, 'not json at all');
+        render(<Form />);
+
+        await userEvent.type(screen.getByLabelText('title'), 'Ny');
+        await settle();
+
+        expect(screen.queryByText(/draft waiting/)).not.toBeInTheDocument();
+        expect(stored()).toEqual({ title: 'Ny' });
+    });
+
+    it('stores nothing while the signed-in user is unknown', async () => {
+        render(<Form formKey={null} />);
+
+        await userEvent.type(screen.getByLabelText('title'), 'Fiskesuppe');
+        await settle();
+
+        // A draft keyed without the user would be offered to whoever signs in next on a
+        // shared browser profile.
+        expect(window.localStorage.length).toBe(0);
+    });
+
+    it('does not offer one user the draft another user left behind', async () => {
+        storedAt({ title: 'Fra forrige bruker' });
+
+        render(<Form formKey="user-2:test-form" />);
+        await settle();
+
+        expect(screen.queryByText(/draft waiting/)).not.toBeInTheDocument();
     });
 });
