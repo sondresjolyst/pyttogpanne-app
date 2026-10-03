@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { getSession, useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import Alert from './Alert';
@@ -36,6 +36,41 @@ export default function SessionExpiryGuard() {
     // Nothing else can close the latch, so leaving it open here would stop ProtectedGate
     // redirecting a dead session for the rest of the page's life.
     useEffect(() => closeSessionPrompt, []);
+
+    const dialog = useRef<HTMLDivElement | null>(null);
+
+    // Keyboard handling for the dialog: Escape closes it, Tab cycles inside it, and focus
+    // starts on the password field and returns where it was. Without this, Tab walks into the
+    // form behind the overlay, which the user cannot see and must not edit.
+    useEffect(() => {
+        if (!open) return;
+        const previous = document.activeElement as HTMLElement | null;
+        const focusable = () =>
+            Array.from(dialog.current?.querySelectorAll<HTMLElement>('input, button:not([disabled])') ?? []);
+
+        focusable().find(element => element instanceof HTMLInputElement && element.type === 'password')?.focus();
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closeSessionPrompt();
+                return;
+            }
+            if (event.key !== 'Tab') return;
+            const elements = focusable();
+            if (elements.length === 0) return;
+            const edge = event.shiftKey ? elements[0] : elements[elements.length - 1];
+            if (document.activeElement === edge) {
+                event.preventDefault();
+                (event.shiftKey ? elements[elements.length - 1] : elements[0]).focus();
+            }
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('keydown', onKeyDown);
+            previous?.focus();
+        };
+    }, [open]);
 
     useEffect(() => {
         const at = session?.absoluteExpiresAt;
@@ -98,6 +133,7 @@ export default function SessionExpiryGuard() {
             {open && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
                     <div
+                        ref={dialog}
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="session-expiry-title"

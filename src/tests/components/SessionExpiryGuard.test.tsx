@@ -186,4 +186,67 @@ describe('SessionExpiryGuard', () => {
         expect(screen.getByText(dict.auth.sessionExpiredBody)).toBeInTheDocument();
         expect(screen.queryByText(dict.auth.sessionExpiringSoon.replace('{minutes}', '0'))).not.toBeInTheDocument();
     });
+
+    it('puts the cursor in the password field when it opens', () => {
+        render(guard());
+
+        act(() => openSessionPrompt());
+
+        expect(screen.getByLabelText(dict.auth.password)).toHaveFocus();
+    });
+
+    it('closes on Escape', async () => {
+        render(guard());
+        act(() => openSessionPrompt());
+
+        await userEvent.keyboard('{Escape}');
+
+        expect(getSessionPromptOpen()).toBe(false);
+    });
+
+    it('keeps Tab inside the dialog', async () => {
+        render(
+            <DictionaryProvider locale="no">
+                <input aria-label="behind the overlay" />
+                <SessionExpiryGuard />
+            </DictionaryProvider>,
+        );
+        act(() => openSessionPrompt());
+
+        // Tab from the last control must wrap to the first, not walk into the form behind the
+        // overlay, which the user cannot see and must not edit.
+        const controls = screen.getByRole('dialog').querySelectorAll('input, button');
+        (controls[controls.length - 1] as HTMLElement).focus();
+        await userEvent.tab();
+
+        expect(screen.getByLabelText('behind the overlay')).not.toHaveFocus();
+        expect(controls[0]).toHaveFocus();
+    });
+
+    it('wraps backwards too', async () => {
+        render(guard());
+        act(() => openSessionPrompt());
+
+        const controls = screen.getByRole('dialog').querySelectorAll('input, button');
+        (controls[0] as HTMLElement).focus();
+        await userEvent.tab({ shift: true });
+
+        expect(controls[controls.length - 1]).toHaveFocus();
+    });
+
+    it('gives focus back where it was when it closes', async () => {
+        render(
+            <DictionaryProvider locale="no">
+                <button type="button">save</button>
+                <SessionExpiryGuard />
+            </DictionaryProvider>,
+        );
+        const save = screen.getByRole('button', { name: 'save' });
+        save.focus();
+
+        act(() => openSessionPrompt());
+        await userEvent.keyboard('{Escape}');
+
+        expect(save).toHaveFocus();
+    });
 });
