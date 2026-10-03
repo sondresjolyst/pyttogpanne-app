@@ -54,7 +54,14 @@
     "newPassword": "Nytt passord",
     "requestCode": "Send kode",
     "setPassword": "Lagre passord",
-    "resetDone": "Passordet er endret. Du kan logge inn."
+    "resetDone": "Passordet er endret. Du kan logge inn.",
+    "sessionExpiredTitle": "Økten er utløpt",
+    "sessionExpiredBody": "Logg inn på nytt for å lagre.",
+    "sessionExpiringSoon": "Økten utløper om {minutes} min. Logg inn på nytt for å fortsette uten avbrudd.",
+    "reSignIn": "Logg inn på nytt",
+    "sessionRestored": "Du er logget inn igjen. Prøv å lagre på nytt.",
+    "sessionNotRestored": "Vi fikk ikke fornyet økten. Prøv igjen.",
+    "sessionWrongUser": "Denne siden tilhører en annen bruker. Logg inn med samme konto."
   },
   "footer": {
     "orgNumber": "Org.nr",
@@ -230,7 +237,10 @@
     "advertising": "Merk som reklame",
     "advertisingHint": "Har du fått utstyret eller ingrediensene gratis, med rabatt eller betalt for omtalen, skal innholdet merkes som reklame. Det gjelder også uten avtale, så lenge giveren venter omtale. Appen viser «Reklame» øverst, slik Forbrukertilsynet krever.",
     "advertiser": "Annonsør",
-    "advertiserHint": "Navnet på den som har gitt eller betalt. Vises ved siden av merkingen."
+    "advertiserHint": "Navnet på den som har gitt eller betalt. Vises ved siden av merkingen.",
+    "draftFound": "Du har et ulagret utkast.",
+    "restoreDraft": "Gjenopprett utkastet",
+    "discardDraft": "Forkast utkastet"
   },
   "stats": {
     "recipes": "Oppskrifter publisert",
