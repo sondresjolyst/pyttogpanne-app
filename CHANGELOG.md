@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.3...v1.0.4) (2026-10-03)
+
+
+### Bug Fixes
+
+* keep admin work when the session expires ([#25](https://github.com/sondresjolyst/pyttogpanne-app/issues/25)) ([929adcb](https://github.com/sondresjolyst/pyttogpanne-app/commit/929adcb21c4342a48ab3e72b643ddd5ee8168c78))
+
 ## [1.0.3](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.2...v1.0.3) (2026-09-27)
 
 
