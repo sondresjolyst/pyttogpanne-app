@@ -137,4 +137,53 @@ describe('SessionExpiryGuard', () => {
 
         expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
+
+    it('refuses to hand the page to a different account', async () => {
+        signIn.mockResolvedValue({ error: null });
+        getSession.mockResolvedValue({
+            user: { id: '2', name: 'other', email: 'c@d.no', roles: ['Admin'] },
+            accessToken: 'token',
+            expires: '',
+        });
+        render(guard());
+        act(() => openSessionPrompt());
+
+        await signInWith('Password1');
+
+        // The form belongs to whoever opened it; saving it as someone else would credit the
+        // wrong author.
+        expect(screen.getByText(dict.auth.sessionWrongUser)).toBeInTheDocument();
+        expect(getSessionPromptOpen()).toBe(true);
+    });
+
+    it('shows the generic message for a failure that is not about credentials', async () => {
+        signIn.mockResolvedValue({ error: null });
+        getSession.mockRejectedValue(new Error('Failed to fetch'));
+        render(guard());
+        act(() => openSessionPrompt());
+
+        await signInWith('Password1');
+
+        // A raw fetch error has no place in an otherwise Norwegian UI.
+        expect(screen.getByText(dict.common.somethingWentWrong)).toBeInTheDocument();
+    });
+
+    it('closes the prompt when it unmounts, so the gate can redirect again', () => {
+        const view = render(guard());
+        act(() => openSessionPrompt());
+        expect(getSessionPromptOpen()).toBe(true);
+
+        view.unmount();
+
+        expect(getSessionPromptOpen()).toBe(false);
+    });
+
+    it('reports an expired session rather than zero minutes left', () => {
+        sessionState = { data: session({ absoluteExpiresAt: Date.now() - 1000 }), status: 'authenticated' };
+
+        render(guard());
+
+        expect(screen.getByText(dict.auth.sessionExpiredBody)).toBeInTheDocument();
+        expect(screen.queryByText(dict.auth.sessionExpiringSoon.replace('{minutes}', '0'))).not.toBeInTheDocument();
+    });
 });

@@ -65,7 +65,9 @@ const UserService = {
 
     async refreshToken(data: TokenResponse): Promise<TokenResponse> {
         try {
-            const response = await apiClient.post<TokenResponse>('/auth/refresh-token', data);
+            // Bounded on purpose: session reads queue behind this one request, so a connection
+            // that blackholes would otherwise freeze the whole admin UI.
+            const response = await apiClient.post<TokenResponse>('/auth/refresh-token', data, { timeout: 10_000 });
             return response.data;
         } catch (error: unknown) {
             const status = axios.isAxiosError(error) ? error.response?.status : undefined;

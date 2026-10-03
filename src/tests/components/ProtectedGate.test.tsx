@@ -6,7 +6,6 @@ import { DictionaryProvider } from '@/i18n/DictionaryProvider';
 import { closeSessionPrompt, openSessionPrompt } from '@/lib/sessionExpiry';
 
 const push = vi.fn();
-const getSession = vi.fn(async () => null);
 let pathname = '/no/admin/recipes/new';
 let sessionState: { data: Session | null; status: 'loading' | 'authenticated' | 'unauthenticated' };
 
@@ -17,7 +16,6 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('next-auth/react', () => ({
     useSession: () => sessionState,
-    getSession: () => getSession(),
 }));
 
 const session = (error?: string): Session => ({
@@ -38,16 +36,12 @@ const gate = () => (
 describe('ProtectedGate', () => {
     beforeEach(() => {
         push.mockClear();
-        getSession.mockClear();
         pathname = '/no/admin/recipes/new';
         sessionState = { data: null, status: 'loading' };
         closeSessionPrompt();
     });
 
-    afterEach(() => {
-        vi.useRealTimers();
-        closeSessionPrompt();
-    });
+    afterEach(() => closeSessionPrompt());
 
     it('sends a signed-out visitor to the login page', () => {
         sessionState = { data: null, status: 'unauthenticated' };
@@ -124,38 +118,36 @@ describe('ProtectedGate', () => {
         expect(push).not.toHaveBeenCalled();
     });
 
+    it('keeps the form on screen while the prompt recovers a signed-out session', () => {
+        sessionState = { data: session(), status: 'authenticated' };
+        const view = render(gate());
+
+        // The cookie is gone (signed out in another tab, or cleared after a callback error) and
+        // the 401 handler has raised the prompt. Declining to redirect is not enough: blanking
+        // the page destroys the form just as surely.
+        sessionState = { data: null, status: 'unauthenticated' };
+        act(() => openSessionPrompt());
+        view.rerender(gate());
+
+        expect(screen.getByText('admin work')).toBeInTheDocument();
+        expect(push).not.toHaveBeenCalled();
+    });
+
+    it('still blanks a page the user never got into, prompt or not', () => {
+        sessionState = { data: null, status: 'unauthenticated' };
+        act(() => openSessionPrompt());
+
+        render(gate());
+
+        // Nothing was earned on this path, so there is no work to protect.
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
+    });
+
     it('ignores a transient refresh failure', () => {
         sessionState = { data: session('ECONNREFUSED'), status: 'authenticated' };
         render(gate());
 
         expect(screen.getByText('admin work')).toBeInTheDocument();
         expect(push).not.toHaveBeenCalled();
-    });
-
-    it('keeps the session fresh without putting the provider into loading', async () => {
-        vi.useFakeTimers({ shouldAdvanceTime: true });
-        sessionState = { data: session(), status: 'authenticated' };
-        render(gate());
-
-        await act(async () => {
-            vi.advanceTimersByTime(4 * 60 * 1000);
-        });
-
-        // getSession, not useSession().update(): update() flips the provider to 'loading',
-        // which would unmount the form every four minutes.
-        expect(getSession).toHaveBeenCalled();
-        expect(screen.getByText('admin work')).toBeInTheDocument();
-    });
-
-    it('does not poll for a signed-out visitor', async () => {
-        vi.useFakeTimers({ shouldAdvanceTime: true });
-        sessionState = { data: null, status: 'unauthenticated' };
-        render(gate());
-
-        await act(async () => {
-            vi.advanceTimersByTime(10 * 60 * 1000);
-        });
-
-        expect(getSession).not.toHaveBeenCalled();
     });
 });

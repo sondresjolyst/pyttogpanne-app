@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from 'react';
 import { getSession, useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import Alert from './Alert';
-import CredentialsForm from './CredentialsForm';
+import CredentialsForm, { SignInRejected } from './CredentialsForm';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import {
     closeSessionPrompt,
@@ -30,7 +30,12 @@ export default function SessionExpiryGuard() {
     const open = useSyncExternalStore(subscribeSessionPrompt, getSessionPromptOpen, () => false);
     const [minutesLeft, setMinutesLeft] = useState<number | null>(null);
 
-    const expired = status === 'authenticated' && isTerminalSessionError(session?.error);
+    const capPassed = session?.absoluteExpiresAt != null && session.absoluteExpiresAt <= Date.now();
+    const expired = status === 'authenticated' && (isTerminalSessionError(session?.error) || capPassed);
+
+    // Nothing else can close the latch, so leaving it open here would stop ProtectedGate
+    // redirecting a dead session for the rest of the page's life.
+    useEffect(() => closeSessionPrompt, []);
 
     useEffect(() => {
         const at = session?.absoluteExpiresAt;
@@ -40,7 +45,8 @@ export default function SessionExpiryGuard() {
         }
         const tick = () => {
             const remaining = at - Date.now();
-            setMinutesLeft(remaining <= WARN_BEFORE_MS ? Math.max(0, Math.round(remaining / 60000)) : null);
+            // Past the cap there are no minutes to report; the expired copy takes over.
+            setMinutesLeft(remaining > 0 && remaining <= WARN_BEFORE_MS ? Math.round(remaining / 60000) : null);
         };
         tick();
         const timer = window.setInterval(tick, WARN_TICK_MS);
@@ -52,7 +58,13 @@ export default function SessionExpiryGuard() {
         // claim success if the new session can actually be used to save.
         const next = await getSession();
         if (!next || isTerminalSessionError(next.error)) {
-            throw new Error(dict.auth.sessionNotRestored);
+            throw new SignInRejected(dict.auth.sessionNotRestored);
+        }
+        // The form on the page belongs to whoever opened it. Letting a different account take
+        // it over would save their work under the wrong author.
+        const owner = session?.user?.id;
+        if (owner && next.user?.id !== owner) {
+            throw new SignInRejected(dict.auth.sessionWrongUser);
         }
         closeSessionPrompt();
         toast.success(dict.auth.sessionRestored);

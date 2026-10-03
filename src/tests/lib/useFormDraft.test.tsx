@@ -171,4 +171,15 @@ describe('useFormDraft', () => {
 
         expect(screen.queryByText(/draft waiting/)).not.toBeInTheDocument();
     });
+
+    it('does not write the draft back after a save', async () => {
+        render(<Form />);
+
+        // The debounced write is already scheduled when the user hits save.
+        await userEvent.type(screen.getByLabelText('title'), 'Fiskesuppe');
+        await userEvent.click(screen.getByRole('button', { name: 'saved' }));
+        await settle();
+
+        expect(window.localStorage.getItem(KEY)).toBeNull();
+    });
 });

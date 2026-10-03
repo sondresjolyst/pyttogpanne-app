@@ -46,9 +46,14 @@ export function useFormDraft<T>(key: string | null, value: T) {
     const [pending, setPending] = useState<T | null>(null);
     const json = JSON.stringify(value);
     const untouched = useRef(json);
+    const writeTimer = useRef<number | null>(null);
 
     useEffect(() => {
+        // Re-base on a key change too: the values on screen belong to the old key, and writing
+        // them under the new one would put this form's work in another form's draft.
+        untouched.current = json;
         setPending(key == null ? null : read<T>(key));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key]);
 
     useEffect(() => {
@@ -63,18 +68,24 @@ export function useFormDraft<T>(key: string | null, value: T) {
                 // A full or blocked store must not break the form.
             }
         }, WRITE_DELAY_MS);
+        writeTimer.current = timer;
         return () => window.clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [key, json]);
 
     const clear = useCallback(() => {
         if (key == null) return;
+        // Cancel a write that is already scheduled, and treat the current values as the new
+        // baseline. Otherwise a save is immediately followed by the draft being written back.
+        if (writeTimer.current != null) window.clearTimeout(writeTimer.current);
+        untouched.current = JSON.stringify(value);
         try {
             window.localStorage.removeItem(PREFIX + key);
         } catch {
             // Ignore: the draft is a convenience, not state we depend on.
         }
-    }, [key]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [key, json]);
 
     return {
         /** The draft found at mount, while it is still waiting to be restored or dismissed. */

@@ -7,9 +7,12 @@ import PasswordInput from './PasswordInput';
 import Alert from './Alert';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 
+/** Thrown by an onSignedIn handler when the message is meant for the user to read. */
+export class SignInRejected extends Error {}
+
 interface CredentialsFormProps {
     initialEmail?: string;
-    /** Runs after next-auth has accepted the credentials. Throw to report a failure to the user. */
+    /** Runs after next-auth has accepted the credentials. Throw SignInRejected to report why. */
     onSignedIn: () => void | Promise<void>;
     children?: React.ReactNode;
 }
@@ -22,8 +25,8 @@ export default function CredentialsForm({ initialEmail = '', onSignedIn, childre
     const [error, setError] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         setError(null);
         setSubmitting(true);
         try {
@@ -34,8 +37,8 @@ export default function CredentialsForm({ initialEmail = '', onSignedIn, childre
             }
             await onSignedIn();
             setPassword('');
-        } catch (cause) {
-            setError(cause instanceof Error ? cause.message : dict.common.somethingWentWrong);
+        } catch (err) {
+            setError(err instanceof SignInRejected ? err.message : dict.common.somethingWentWrong);
         } finally {
             setSubmitting(false);
         }

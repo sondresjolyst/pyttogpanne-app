@@ -190,14 +190,48 @@ describe('the jwt callback', () => {
         expect(second.refreshToken).toBe('RT-next');
     });
 
-    it('refreshes again on a later read, once the first refresh has settled', async () => {
+    it('answers a read that was already carrying the consumed token', async () => {
         respondWith({ token: apiToken(), refreshToken: 'RT-next' });
         const token = sessionToken({ refreshAt: 0 });
 
-        await runJwt(token);
-        await runJwt(token);
+        const first = await runJwt(token);
+        // A request that was on the wire during the rotation arrives afterwards still holding
+        // the old token. Rotating again would present a token the API has consumed, and it
+        // answers that by revoking every session the user has.
+        const late = await runJwt(token);
+
+        expect(calls).toBe(1);
+        expect(late.refreshToken).toBe(first.refreshToken);
+    });
+
+    it('rotates a token it has not seen before', async () => {
+        respondWith({ token: apiToken(), refreshToken: 'RT-next' });
+
+        await runJwt(sessionToken({ refreshAt: 0 }));
+        await runJwt(sessionToken({ refreshAt: 0 }));
 
         expect(calls).toBe(2);
+    });
+
+    it('does not fall into a rotation on every read when the token carries no lifetime', async () => {
+        const iat = Math.floor(Date.now() / 1000);
+        const noExpiry = jwt.sign({ sub: 'u1', unique_name: 'admin', email: 'a@b.no', role: ['Admin'], iat }, SECRET);
+        respondWith({ token: noExpiry, refreshToken: 'RT-next' });
+
+        const result = await runJwt(sessionToken({ refreshAt: 0 }));
+
+        // NaN is falsy, so an unguarded refreshAt would make every session read spend a
+        // rotation, and each rotation is a chance to replay.
+        expect(result.refreshAt).toBeGreaterThan(Date.now());
+    });
+
+    it('backs off instead of retrying a sick API on every request', async () => {
+        failWith(503);
+
+        const result = await runJwt(sessionToken({ refreshAt: 0 }));
+
+        expect(result.error).toBeUndefined();
+        expect(result.refreshAt).toBeGreaterThan(Date.now());
     });
 
     it('shortens the skew for a short-lived access token so not every read refreshes', async () => {
