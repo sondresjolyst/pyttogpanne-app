@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
+import Alert from '@/components/Alert';
 import TextInput from '@/components/TextInput';
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
@@ -21,6 +22,7 @@ import { toGalleryInput, type GalleryImageInput } from '@/services/imageService'
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
 import { move } from '@/lib/arrays';
+import { useFormDraft } from '@/lib/useFormDraft';
 
 interface IngredientRow {
     groupName: string;
@@ -80,6 +82,40 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
             .catch(err => toast.error(err instanceof Error ? err.message : dict.admin.categoriesLoadFailed));
     }, []);
 
+    const values = {
+        title, intro, servings, prepMinutes, cookMinutes, difficulty, tips, images,
+        isPublished, isAdvertising, advertiser, categoryIds, ingredients, steps,
+    };
+    const draft = useFormDraft(`recipe:${recipe?.id ?? 'new'}`, values);
+
+    // One setter per persisted field, checked by the compiler: adding a field to `values`
+    // without one here is an error rather than a field that silently fails to restore.
+    const setters: { [K in keyof typeof values]: (value: (typeof values)[K]) => void } = {
+        title: setTitle,
+        intro: setIntro,
+        servings: setServings,
+        prepMinutes: setPrepMinutes,
+        cookMinutes: setCookMinutes,
+        difficulty: setDifficulty,
+        tips: setTips,
+        images: setImages,
+        isPublished: setIsPublished,
+        isAdvertising: setIsAdvertising,
+        advertiser: setAdvertiser,
+        categoryIds: setCategoryIds,
+        ingredients: setIngredients,
+        steps: setSteps,
+    };
+
+    const restoreDraft = () => {
+        const stored = draft.pending;
+        if (!stored) return;
+        for (const [key, set] of Object.entries(setters) as [keyof typeof values, (value: unknown) => void][]) {
+            set(stored[key]);
+        }
+        draft.dismiss();
+    };
+
     const patchIngredient = (index: number, patch: Partial<IngredientRow>) =>
         setIngredients(rows => rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
 
@@ -126,6 +162,7 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
                 await RecipeService.create(body);
                 toast.success(dict.admin.recipeCreated);
             }
+            draft.clear();
             router.push(localeHref(locale, '/admin/recipes'));
             router.refresh();
         } catch (err) {
@@ -137,6 +174,21 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
 
     return (
         <div className="space-y-8">
+            {draft.pending && (
+                <Alert variant="warning">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span>{dict.admin.draftFound}</span>
+                        <span className="flex gap-3">
+                            <button type="button" onClick={restoreDraft} className="font-semibold underline underline-offset-2">
+                                {dict.admin.restoreDraft}
+                            </button>
+                            <button type="button" onClick={() => { draft.clear(); draft.dismiss(); }} className="underline underline-offset-2">
+                                {dict.admin.discardDraft}
+                            </button>
+                        </span>
+                    </div>
+                </Alert>
+            )}
             <section className="space-y-4">
                 <TextInput label={dict.admin.recipeTitle} required value={title} onChange={e => setTitle(e.target.value)} />
                 <TextArea label={dict.recipes.intro} value={intro} onChange={e => setIntro(e.target.value)} />
