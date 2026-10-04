@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.5](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.4...v1.0.5) (2026-10-04)
+
+
+### Dependencies
+
+* **npm:** bump @types/node from 26.6.2 to 26.6.3 in the types group ([#31](https://github.com/sondresjolyst/pyttogpanne-app/issues/31)) ([9fa7e6d](https://github.com/sondresjolyst/pyttogpanne-app/commit/9fa7e6d38d60c309e0b2ac51431fcbeb32bc9f77))
+* **npm:** bump `brace-expansion` from 1.1.18 to 1.1.21 ([#27](https://github.com/sondresjolyst/pyttogpanne-app/issues/27)) ([108781b](https://github.com/sondresjolyst/pyttogpanne-app/commit/108781b55e55bc68e7bc45d9b3b2a20fd14b2f0f))
+* **npm:** bump the next group across 1 directory with 2 updates ([#29](https://github.com/sondresjolyst/pyttogpanne-app/issues/29)) ([bdf506a](https://github.com/sondresjolyst/pyttogpanne-app/commit/bdf506a4bdf970eb4d6acb4b9c2f72b8adee7b96))
+* **npm:** bump the testing group with 2 updates ([#30](https://github.com/sondresjolyst/pyttogpanne-app/issues/30)) ([bfb87c2](https://github.com/sondresjolyst/pyttogpanne-app/commit/bfb87c202e22cee643ce6346b150d3874d872955))
+
 ## [1.0.4](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.3...v1.0.4) (2026-10-03)
 
 
