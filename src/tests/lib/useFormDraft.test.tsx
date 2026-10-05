@@ -4,11 +4,14 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { useFormDraft } from '@/lib/useFormDraft';
 
-const KEY = 'pyttogpanne:draft:test-form';
+const OWNER = 'user-1';
+const KEY = `pyttogpanne:draft:${OWNER}:test-form`;
 
-function Form({ initialTitle = '', formKey = 'test-form' }: { initialTitle?: string; formKey?: string | null }) {
+// noOwner rather than owner={undefined}: passing undefined for a defaulted prop just picks
+// the default up again.
+function Form({ initialTitle = '', owner = OWNER, scope = 'test-form', noOwner = false }: { initialTitle?: string; owner?: string; scope?: string; noOwner?: boolean }) {
     const [title, setTitle] = useState(initialTitle);
-    const draft = useFormDraft(formKey, { title });
+    const draft = useFormDraft({ owner: noOwner ? undefined : owner, scope, value: { title } });
 
     return (
         <div>
@@ -152,8 +155,8 @@ describe('useFormDraft', () => {
         expect(stored()).toEqual({ title: 'Ny' });
     });
 
-    it('stores nothing while the signed-in user is unknown', async () => {
-        render(<Form formKey={null} />);
+    it('stores nothing until an owner is known', async () => {
+        render(<Form noOwner />);
 
         await userEvent.type(screen.getByLabelText('title'), 'Fiskesuppe');
         await settle();
@@ -166,7 +169,7 @@ describe('useFormDraft', () => {
     it('does not offer one user the draft another user left behind', async () => {
         storedAt({ title: 'Fra forrige bruker' });
 
-        render(<Form formKey="user-2:test-form" />);
+        render(<Form owner="user-2" />);
         await settle();
 
         expect(screen.queryByText(/draft waiting/)).not.toBeInTheDocument();
