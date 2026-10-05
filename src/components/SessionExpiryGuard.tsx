@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { getSession, useSession } from 'next-auth/react';
+import { getSession, signOut, useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import Alert from './Alert';
 import CredentialsForm, { SignInRejected } from './CredentialsForm';
 import { useDictionary } from '@/i18n/DictionaryProvider';
+import { localeHref } from '@/i18n/config';
 import {
     closeSessionPrompt,
     getSessionPromptOpen,
@@ -25,17 +26,53 @@ const WARN_TICK_MS = 60 * 1000;
  */
 export default function SessionExpiryGuard() {
     const { data: session, status } = useSession();
-    const { dict } = useDictionary();
+    const { locale, dict } = useDictionary();
 
     const open = useSyncExternalStore(subscribeSessionPrompt, getSessionPromptOpen, () => false);
-    const [minutesLeft, setMinutesLeft] = useState<number | null>(null);
 
-    const capPassed = session?.absoluteExpiresAt != null && session.absoluteExpiresAt <= Date.now();
-    const expired = status === 'authenticated' && (isTerminalSessionError(session?.error) || capPassed);
+    // Who opened this page. Latched, because once a lost cookie has been re-read useSession
+    // reports nobody, and an unlatched check would accept a sign-in from any account.
+    const [owner, setOwner] = useState<{ id: string; email: string } | null>(null);
+    const current = session?.user;
+    if (current?.id && current.id !== owner?.id) setOwner({ id: current.id, email: current.email ?? '' });
+
+    // A clock in state rather than Date.now() in render, so rendering stays pure and the banner
+    // still re-reads the remaining time every minute.
+    const [now, setNow] = useState(() => Date.now());
+    useEffect(() => {
+        const timer = window.setInterval(() => setNow(Date.now()), WARN_TICK_MS);
+        return () => window.clearInterval(timer);
+    }, []);
+
+    const remaining = status === 'authenticated' && session?.absoluteExpiresAt != null
+        ? session.absoluteExpiresAt - now
+        : null;
+    // Past the cap there are no minutes to report, so the expired copy takes over.
+    const minutesLeft = remaining != null && remaining > 0 && remaining <= WARN_BEFORE_MS
+        ? Math.round(remaining / 60000)
+        : null;
+    const expired = status === 'authenticated'
+        && (isTerminalSessionError(session?.error) || (remaining != null && remaining <= 0));
 
     // Nothing else can close the latch, so leaving it open here would stop ProtectedGate
     // redirecting a dead session for the rest of the page's life.
     useEffect(() => closeSessionPrompt, []);
+
+    // Who the prompt opened for. signIn refreshes the session before its promise resolves, so
+    // comparing against the live owner would end up comparing the new account with itself. The
+    // submit handler's closure happens to hold the old owner today, so this ref is what makes
+    // that correctness explicit rather than incidental. No test can tell the two apart, which
+    // is the reason to prefer the explicit one.
+    const promptOwner = useRef<{ id: string; email: string } | null>(null);
+    useEffect(() => {
+        if (!open) {
+            promptOwner.current = null;
+            return;
+        }
+        // Only on the way open. Reassigning while open would adopt the account that just
+        // signed in, which is the very thing being checked against.
+        promptOwner.current ??= owner;
+    }, [open, owner]);
 
     const dialog = useRef<HTMLDivElement | null>(null);
 
@@ -72,22 +109,6 @@ export default function SessionExpiryGuard() {
         };
     }, [open]);
 
-    useEffect(() => {
-        const at = session?.absoluteExpiresAt;
-        if (status !== 'authenticated' || at == null) {
-            setMinutesLeft(null);
-            return;
-        }
-        const tick = () => {
-            const remaining = at - Date.now();
-            // Past the cap there are no minutes to report; the expired copy takes over.
-            setMinutesLeft(remaining > 0 && remaining <= WARN_BEFORE_MS ? Math.round(remaining / 60000) : null);
-        };
-        tick();
-        const timer = window.setInterval(tick, WARN_TICK_MS);
-        return () => window.clearInterval(timer);
-    }, [status, session?.absoluteExpiresAt]);
-
     const signedIn = async () => {
         // next-auth's signIn already refreshed the client session, so read it back and only
         // claim success if the new session can actually be used to save.
@@ -95,10 +116,13 @@ export default function SessionExpiryGuard() {
         if (!next || isTerminalSessionError(next.error)) {
             throw new SignInRejected(dict.auth.sessionNotRestored);
         }
-        // The form on the page belongs to whoever opened it. Letting a different account take
-        // it over would save their work under the wrong author.
-        const owner = session?.user?.id;
-        if (owner && next.user?.id !== owner) {
+        // The form on the page belongs to whoever opened it. Refusing in the dialog is not
+        // enough, because signIn has already replaced the session: end it, or the new account
+        // keeps the page and can save the previous user's work as their own. Nothing is lost,
+        // since that draft is stored under its owner's id and returns when they sign in.
+        const opener = promptOwner.current ?? owner;
+        if (opener && next.user?.id !== opener.id) {
+            await signOut({ callbackUrl: localeHref(locale, '/login') });
             throw new SignInRejected(dict.auth.sessionWrongUser);
         }
         closeSessionPrompt();
@@ -111,7 +135,7 @@ export default function SessionExpiryGuard() {
                 // Anchored to the bottom: the navbar is sticky at the top with the same
                 // stacking level.
                 <div className="fixed inset-x-0 bottom-0 z-40">
-                    <Alert variant="warning">
+                    <Alert variant="warning" role={expired ? 'alert' : 'status'}>
                         <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
                             <span>
                                 {expired
@@ -143,7 +167,7 @@ export default function SessionExpiryGuard() {
                             {dict.auth.sessionExpiredTitle}
                         </h2>
                         <p className="mt-1 mb-4 text-sm text-gray-600">{dict.auth.sessionExpiredBody}</p>
-                        <CredentialsForm initialEmail={session?.user?.email ?? ''} onSignedIn={signedIn}>
+                        <CredentialsForm initialEmail={owner?.email ?? ''} onSignedIn={signedIn}>
                             <button
                                 type="button"
                                 onClick={closeSessionPrompt}

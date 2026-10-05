@@ -10,6 +10,7 @@ import { closeSessionPrompt, getSessionPromptOpen, openSessionPrompt } from '@/l
 const dict = getDictionary('no');
 
 const signIn = vi.fn();
+const signOut = vi.fn();
 const getSession = vi.fn();
 const success = vi.fn();
 let sessionState: { data: Session | null; status: 'loading' | 'authenticated' | 'unauthenticated' };
@@ -17,6 +18,7 @@ let sessionState: { data: Session | null; status: 'loading' | 'authenticated' | 
 vi.mock('next-auth/react', () => ({
     useSession: () => sessionState,
     signIn: (...args: unknown[]) => signIn(...args),
+    signOut: (...args: unknown[]) => signOut(...args),
     getSession: () => getSession(),
 }));
 
@@ -38,13 +40,14 @@ const guard = () => (
 );
 
 const signInWith = async (password: string) => {
-    await userEvent.type(screen.getByLabelText(dict.auth.password), password);
+    await userEvent.type(screen.getByLabelText(new RegExp(`^${dict.auth.password}`)), password);
     await userEvent.click(screen.getByRole('button', { name: dict.auth.signIn }));
 };
 
 describe('SessionExpiryGuard', () => {
     beforeEach(() => {
         signIn.mockReset();
+        signOut.mockReset();
         getSession.mockReset();
         success.mockReset();
         sessionState = { data: session(), status: 'authenticated' };
@@ -66,7 +69,7 @@ describe('SessionExpiryGuard', () => {
         act(() => openSessionPrompt());
 
         expect(screen.getByRole('dialog')).toBeInTheDocument();
-        expect(screen.getByLabelText(dict.auth.email, { exact: false })).toHaveValue('a@b.no');
+        expect(screen.getByLabelText(new RegExp(`^${dict.auth.email}`))).toHaveValue('a@b.no');
     });
 
     it('signs in without navigating away from the form', async () => {
@@ -150,8 +153,9 @@ describe('SessionExpiryGuard', () => {
 
         await signInWith('Password1');
 
-        // The form belongs to whoever opened it; saving it as someone else would credit the
-        // wrong author.
+        // The form belongs to whoever opened it, and signIn has already swapped the session,
+        // so detecting the mismatch has to end it rather than only report it.
+        expect(signOut).toHaveBeenCalledWith(expect.objectContaining({ callbackUrl: '/no/login' }));
         expect(screen.getByText(dict.auth.sessionWrongUser)).toBeInTheDocument();
         expect(getSessionPromptOpen()).toBe(true);
     });
@@ -192,7 +196,7 @@ describe('SessionExpiryGuard', () => {
 
         act(() => openSessionPrompt());
 
-        expect(screen.getByLabelText(dict.auth.password)).toHaveFocus();
+        expect(screen.getByLabelText(new RegExp(`^${dict.auth.password}`))).toHaveFocus();
     });
 
     it('closes on Escape', async () => {
@@ -249,4 +253,38 @@ describe('SessionExpiryGuard', () => {
 
         expect(save).toHaveFocus();
     });
+
+    it('still refuses another account after the cookie is gone', async () => {
+        sessionState = { data: session(), status: 'authenticated' };
+        const view = render(guard());
+
+        // The cookie is lost, so useSession reports nobody. Reading the owner from the live
+        // session here would leave nothing to compare against and accept any account.
+        sessionState = { data: null, status: 'unauthenticated' };
+        view.rerender(guard());
+        act(() => openSessionPrompt());
+
+        signIn.mockResolvedValue({ error: null });
+        getSession.mockResolvedValue({
+            user: { id: '2', name: 'other', email: 'c@d.no', roles: ['Admin'] },
+            accessToken: 'token',
+            expires: '',
+        });
+        await signInWith('Password1');
+
+        expect(signOut).toHaveBeenCalled();
+        expect(screen.getByText(dict.auth.sessionWrongUser)).toBeInTheDocument();
+    });
+
+    it('offers the owner email back after the cookie is gone', async () => {
+        sessionState = { data: session(), status: 'authenticated' };
+        const view = render(guard());
+
+        sessionState = { data: null, status: 'unauthenticated' };
+        view.rerender(guard());
+        act(() => openSessionPrompt());
+
+        expect(screen.getByLabelText(new RegExp(`^${dict.auth.email}`))).toHaveValue('a@b.no');
+    });
+
 });
