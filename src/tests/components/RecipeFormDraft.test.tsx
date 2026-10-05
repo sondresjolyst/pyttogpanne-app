@@ -29,6 +29,13 @@ const authenticated = () => ({
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
+const create = vi.fn(async (_body: unknown) => ({ id: 1 }));
+
+vi.mock('@/services/recipeService', async importOriginal => {
+    const actual = await importOriginal<typeof import('@/services/recipeService')>();
+    return { ...actual, default: { ...actual.default, create: (body: unknown) => create(body) } };
+});
+
 vi.mock('@/services/recipeCategoryService', () => ({
     default: { list: async () => [] },
 }));
@@ -50,8 +57,7 @@ const draft = {
     steps: [{ text: 'Skjær fisken i terninger.', contentImageId: null }],
 };
 
-// The title field passes no name or id, so TextInput cannot associate its label with the
-// input and getByLabelText does not reach it. Pre-existing, so select by position instead.
+// Selected by position, which also keeps the test independent of the label wording.
 const titleInput = () => screen.getAllByRole('textbox')[0];
 
 const form = () => (
@@ -140,5 +146,19 @@ describe('the recipe form draft bar', () => {
 
         // No owner was ever known here, so there is no key that could not belong to someone else.
         expect(window.localStorage.length).toBe(0);
+    });
+
+    it('keeps a field the stored draft predates', async () => {
+        // Drafts are kept for a week, so one can easily predate a newly added field. Asserting
+        // on the rendered input would prove nothing: an undefined value makes React treat it as
+        // uncontrolled and the old text stays on screen. What matters is what gets saved.
+        const { servings: _dropped, ...older } = draft;
+        window.localStorage.setItem(KEY, JSON.stringify({ savedAt: Date.now(), value: older }));
+        render(form());
+
+        await userEvent.click(await screen.findByRole('button', { name: dict.admin.restoreDraft }));
+        await userEvent.click(screen.getByRole('button', { name: dict.common.save }));
+
+        expect(create).toHaveBeenCalledWith(expect.objectContaining({ servings: 2 }));
     });
 });
