@@ -21,16 +21,31 @@ export default function AdminUsersPage() {
     const [invite, setInvite] = useState({ email: '', firstName: '', lastName: '', role: 'Admin' });
     const [inviting, setInviting] = useState(false);
 
-    const load = (deleted: boolean) => {
+    // Bumped to fetch the list again after a change, through the same effect as every other load.
+    const [reloads, setReloads] = useState(0);
+
+    // Callers set `loading` before changing what to fetch, so the effect only sets state once the
+    // request settles. A request replaced by a newer one is ignored, so a slow answer to an earlier
+    // toggle cannot overwrite the list the toggle now shows.
+    useEffect(() => {
+        let replaced = false;
+        AdminService.getUsers(includeDeleted)
+            .then(list => { if (!replaced) setUsers(list); })
+            .catch(err => { if (!replaced) toast.error(err instanceof Error ? err.message : dict.admin.usersLoadFailed); })
+            .finally(() => { if (!replaced) setLoading(false); });
+        return () => { replaced = true; };
+    }, [includeDeleted, reloads, dict.admin.usersLoadFailed]);
+
+    const reload = () => {
         setLoading(true);
-        AdminService.getUsers(deleted)
-            .then(setUsers)
-            .catch(err => toast.error(err instanceof Error ? err.message : dict.admin.usersLoadFailed))
-            .finally(() => setLoading(false));
+        setReloads(n => n + 1);
     };
 
-    useEffect(() => { load(includeDeleted); }, [includeDeleted]);
-    useEffect(() => { AdminService.getRoles().then(setAllRoles).catch(() => toast.error(dict.admin.rolesLoadFailed)); }, []);
+    const toggleDeleted = (deleted: boolean) => {
+        setLoading(true);
+        setIncludeDeleted(deleted);
+    };
+    useEffect(() => { AdminService.getRoles().then(setAllRoles).catch(() => toast.error(dict.admin.rolesLoadFailed)); }, [dict.admin.rolesLoadFailed]);
 
     const setRoles = (id: string, roles: string[]) =>
         setUsers(prev => prev.map(u => (u.id === id ? { ...u, roles } : u)));
@@ -67,7 +82,7 @@ export default function AdminUsersPage() {
         try {
             await AdminService.deleteUser(user.id);
             toast.success(dict.admin.userDeleted);
-            load(includeDeleted);
+            reload();
         } catch (err) {
             toast.error(err instanceof Error ? err.message : dict.admin.userDeleteFailed);
         }
@@ -83,7 +98,7 @@ export default function AdminUsersPage() {
             await AdminService.invite(invite.email.trim(), invite.firstName.trim(), invite.lastName.trim(), invite.role);
             toast.success(dict.admin.inviteSentLong);
             setInvite({ email: '', firstName: '', lastName: '', role: invite.role });
-            load(includeDeleted);
+            reload();
         } catch (err) {
             toast.error(err instanceof Error ? err.message : dict.admin.inviteFailed);
         } finally {
@@ -95,7 +110,7 @@ export default function AdminUsersPage() {
         <div className="space-y-4">
             <div className="flex items-center justify-between">
                 <h2 className="font-bold text-gray-900">{dict.admin.users}</h2>
-                <Toggle label={dict.admin.showDeleted} checked={includeDeleted} onChange={setIncludeDeleted} />
+                <Toggle label={dict.admin.showDeleted} checked={includeDeleted} onChange={toggleDeleted} />
             </div>
 
             <div className="rounded-2xl border border-gray-200 p-4 space-y-3">

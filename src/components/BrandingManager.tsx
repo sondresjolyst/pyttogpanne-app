@@ -19,6 +19,9 @@ function Slot({
     const inputRef = useRef<HTMLInputElement>(null);
     const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
+    // An object URL is an outside resource with a lifetime, which is what an effect is for. Creating
+    // it during render instead leaks the second URL that StrictMode builds when it renders twice.
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         if (!file) {
             setObjectUrl(null);
@@ -28,6 +31,7 @@ function Slot({
         setObjectUrl(url);
         return () => URL.revokeObjectURL(url);
     }, [file]);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const preview = objectUrl ?? currentUrl;
     return (
