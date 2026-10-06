@@ -1,6 +1,6 @@
 import axios from 'axios';
 import axiosInstance from './axiosInstance';
-import { formatApiError } from '@/lib/errors';
+import { formatApiError } from '@sjolystinnovation/app-kit';
 
 export interface Branding {
     logoData?: string | null;

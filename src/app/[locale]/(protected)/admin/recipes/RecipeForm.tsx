@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
-import Alert from '@/components/Alert';
+import { Alert } from '@sjolystinnovation/app-kit/ui';
 import TextInput from '@/components/TextInput';
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
