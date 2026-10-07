@@ -101,6 +101,8 @@
   },
   "admin": {
     "title": "Admin",
+    "noAccess": "Du har ikke tilgang til adminsiden.",
+    "noAccessHint": "Logg ut og logg inn med en konto som har admin-tilgang.",
     "dashboard": "Oversikt",
     "recipes": "Oppskrifter",
     "categories": "Kategorier",
