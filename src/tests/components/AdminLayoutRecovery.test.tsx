@@ -19,8 +19,8 @@ vi.mock('next-auth/react', () => ({
     useSession: () => sessionState,
 }));
 
-const session = (): Session => ({
-    user: { id: '1', name: 'admin', email: 'a@b.no', roles: ['Admin'] },
+const session = (roles: string[] = ['Admin']): Session => ({
+    user: { id: '1', name: 'admin', email: 'a@b.no', roles },
     accessToken: 'token',
     expires: '',
 });
@@ -67,15 +67,72 @@ describe('the admin layout inside the gate', () => {
         expect(push).not.toHaveBeenCalled();
     });
 
-    it('still keeps a non-admin out of the admin page', () => {
-        sessionState = {
-            data: { ...session(), user: { ...session().user, roles: [] } },
-            status: 'authenticated',
-        };
-
+    it('tells a signed-in user without the admin role that they have no access', () => {
+        sessionState = { data: session([]), status: 'authenticated' };
         render(tree());
 
+        // The start page redirects to admin, so a redirect there would come straight back.
         expect(screen.queryByText('admin work')).not.toBeInTheDocument();
-        expect(push).toHaveBeenCalledWith('/no');
+        expect(screen.getByText('Du har ikke tilgang til adminsiden.')).toBeInTheDocument();
+        expect(push).not.toHaveBeenCalled();
+    });
+
+    it('keeps a non-admin out of the admin page while the prompt is open', () => {
+        sessionState = { data: session([]), status: 'authenticated' };
+        const view = render(tree());
+
+        // The prompt being open must not let a known non-admin through.
+        act(() => openSessionPrompt());
+        view.rerender(tree());
+
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
+        expect(screen.getByText('Du har ikke tilgang til adminsiden.')).toBeInTheDocument();
+    });
+
+    it('does not carry an admin pass over to a session that has no admin role', () => {
+        const view = render(tree());
+        expect(screen.getByText('admin work')).toBeInTheDocument();
+
+        // Another account signed in through the prompt, or the role was taken away. The session
+        // now has a user without the role, so the page the admin opened must not stay up.
+        sessionState = { data: session([]), status: 'authenticated' };
+        act(() => openSessionPrompt());
+        view.rerender(tree());
+
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
+        expect(screen.getByText('Du har ikke tilgang til adminsiden.')).toBeInTheDocument();
+
+        // The pass stays cleared after that session is lost too.
+        sessionState = { data: null, status: 'unauthenticated' };
+        view.rerender(tree());
+
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
+    });
+
+    it('keeps out a non-admin whose session is lost while the prompt is open', () => {
+        sessionState = { data: session([]), status: 'authenticated' };
+        const view = render(tree());
+
+        // No user on the session, so the roles are unknown. This user never had the role here.
+        sessionState = { data: null, status: 'unauthenticated' };
+        act(() => openSessionPrompt());
+        view.rerender(tree());
+
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
+    });
+
+    it('does not let an admin pass on one page carry over to the next', () => {
+        const view = render(tree());
+        expect(screen.getByText('admin work')).toBeInTheDocument();
+
+        // On the next page the session still works but carries no user, so the role is never seen
+        // there. The session gate passes this page. The admin pass from the first page must not.
+        pathname = '/no/admin/users';
+        sessionState = { data: { accessToken: 'token', expires: '' } as Session, status: 'authenticated' };
+        view.rerender(tree());
+        act(() => openSessionPrompt());
+        view.rerender(tree());
+
+        expect(screen.queryByText('admin work')).not.toBeInTheDocument();
     });
 });

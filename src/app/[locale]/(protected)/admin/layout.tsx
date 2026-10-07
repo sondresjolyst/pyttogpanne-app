@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter, usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ADMIN_ROLE } from '@/lib/roles';
 import { useDictionary } from '@/i18n/DictionaryProvider';
@@ -9,11 +9,20 @@ import { localeHref } from '@/i18n/config';
 import { useSessionGate } from '@sjolystinnovation/app-kit/session/react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const { session, status, recovering, mayRender } = useSessionGate();
-    const router = useRouter();
+    const { session, recovering, mayRender } = useSessionGate();
     const pathname = usePathname();
     const { locale, dict } = useDictionary();
     const isAdmin = (session?.user?.roles ?? []).includes(ADMIN_ROLE);
+
+    // While the prompt recovers a signed-out session there is no user, so the roles are unknown.
+    // Only the path where the session last had the admin role may stay up through that. A session
+    // that has a user without the role clears the pass. Adjusted during render, the same way
+    // useSessionGate tracks the path it last passed.
+    const rolesKnown = session?.user != null;
+    const [adminAt, setAdminAt] = useState<string | null>(null);
+    if (isAdmin && adminAt !== pathname) setAdminAt(pathname);
+    if (rolesKnown && !isAdmin && adminAt !== null) setAdminAt(null);
+    const keepThroughRecovery = recovering && adminAt === pathname;
 
     const tabs = [
         { href: localeHref(locale, '/admin'), label: dict.admin.dashboard },
@@ -26,17 +35,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { href: localeHref(locale, '/admin/settings'), label: dict.admin.settings },
     ];
 
-    useEffect(() => {
-        if (status === 'authenticated' && !isAdmin) {
-            router.push(localeHref(locale, '/'));
-        }
-    }, [status, isAdmin, router, locale]);
-
-    // One decision, taken in useSessionGate. Deciding again here is what blanked the page the
-    // gate above had chosen to keep. The role is this layout's own concern, and a session being
-    // recovered reports no roles yet.
-    if (!mayRender || (!isAdmin && !recovering)) {
+    // Whether the session allows the page is decided once, in useSessionGate. Deciding again here
+    // is what blanked the page the gate above had chosen to keep.
+    // A session without a user has unknown roles, so it waits rather than being told it has no access.
+    const denied = !isAdmin && !keepThroughRecovery;
+    if (!mayRender || (denied && !rolesKnown)) {
         return <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 text-center text-gray-500">{dict.common.loading}</div>;
+    }
+
+    // The role is this layout's own concern. A signed-in user without it is told so here. The start
+    // page redirects to admin, so there is nowhere else to send them.
+    if (denied) {
+        return (
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-20 text-center">
+                <p className="text-gray-900 font-semibold">{dict.admin.noAccess}</p>
+                <p className="mt-2 text-sm text-gray-500">{dict.admin.noAccessHint}</p>
+            </div>
+        );
     }
 
     return (
