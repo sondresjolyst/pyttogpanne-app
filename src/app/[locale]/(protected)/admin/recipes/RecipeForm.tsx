@@ -23,7 +23,8 @@ import { toGalleryInput, type GalleryImageInput } from '@/services/imageService'
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
 import { move } from '@/lib/arrays';
-import { useFormDraft } from '@/lib/useFormDraft';
+import { useFormDraft } from '@sjolystinnovation/app-kit/forms';
+import { sessionConfig } from '@/lib/session';
 
 interface IngredientRow {
     groupName: string;
@@ -88,7 +89,7 @@ export default function RecipeForm({ recipe }: { recipe?: RecipeDetail }) {
         title, intro, servings, prepMinutes, cookMinutes, difficulty, tips, images,
         isPublished, isAdvertising, advertiser, categoryIds, ingredients, steps,
     };
-    const draft = useFormDraft({
+    const draft = useFormDraft(sessionConfig, {
         owner: session?.user?.id,
         scope: `recipe:${recipe?.id ?? 'new'}`,
         value: values,
