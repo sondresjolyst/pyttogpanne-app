@@ -1,12 +1,11 @@
 "use client";
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { Alert } from '@sjolystinnovation/app-kit/ui';
-import TextInput from '@/components/TextInput';
+import { Alert, TextInput } from '@sjolystinnovation/app-kit/ui';
+
 import TextArea from '@/components/TextArea';
 import Toggle from '@/components/Toggle';
 import ImageGalleryEditor from '@/components/ImageGalleryEditor';

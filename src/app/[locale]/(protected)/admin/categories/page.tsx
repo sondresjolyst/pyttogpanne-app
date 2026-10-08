@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CheckIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import TextInput from '@/components/TextInput';
+import { TextInput } from '@sjolystinnovation/app-kit/ui';
 import RecipeCategoryService from '@/services/recipeCategoryService';
 import type { RecipeCategory } from '@/services/recipeService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
