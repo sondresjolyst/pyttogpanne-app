@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import { request } from '@/lib/apiRequest';
+import { request } from '@sjolystinnovation/app-kit/api';
 import type { GalleryImage, GalleryImageInput } from './imageService';
 
 export const GEAR_KINDS = ['Utstyr', 'Tips'] as const;
