@@ -7,11 +7,12 @@ import { DictionaryProvider } from '@/i18n/DictionaryProvider';
 import { closeSessionPrompt, openSessionPrompt } from '@sjolystinnovation/app-kit/session';
 
 const push = vi.fn();
+const replace = vi.fn();
 let pathname = '/no/admin/recipes/new';
 let sessionState: { data: Session | null; status: 'loading' | 'authenticated' | 'unauthenticated' };
 
 vi.mock('next/navigation', () => ({
-    useRouter: () => ({ push }),
+    useRouter: () => ({ push, replace }),
     usePathname: () => pathname,
 }));
 
@@ -40,6 +41,7 @@ const tree = () => (
 describe('the admin layout inside the gate', () => {
     beforeEach(() => {
         push.mockClear();
+        replace.mockClear();
         pathname = '/no/admin/recipes/new';
         sessionState = { data: session(), status: 'authenticated' };
         closeSessionPrompt();
@@ -65,6 +67,7 @@ describe('the admin layout inside the gate', () => {
 
         expect(screen.getByText('admin work')).toBeInTheDocument();
         expect(push).not.toHaveBeenCalled();
+        expect(replace).not.toHaveBeenCalled();
     });
 
     it('tells a signed-in user without the admin role that they have no access', () => {
@@ -75,6 +78,7 @@ describe('the admin layout inside the gate', () => {
         expect(screen.queryByText('admin work')).not.toBeInTheDocument();
         expect(screen.getByText('Du har ikke tilgang til adminsiden.')).toBeInTheDocument();
         expect(push).not.toHaveBeenCalled();
+        expect(replace).not.toHaveBeenCalled();
     });
 
     it('keeps a non-admin out of the admin page while the prompt is open', () => {

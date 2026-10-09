@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ArrowDownIcon, ArrowUpIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ContentImage from '@/components/ContentImage';
-import TextInput from '@/components/TextInput';
+import { TextInput } from '@sjolystinnovation/app-kit/ui';
 import ImageService, { type GalleryImageInput } from '@/services/imageService';
 import { move } from '@/lib/arrays';
 import { useDictionary } from '@/i18n/DictionaryProvider';

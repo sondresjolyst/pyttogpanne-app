@@ -10,7 +10,7 @@ const USER_ID = 'user-1';
 const KEY = `pyttogpanne:draft:${USER_ID}:recipe:new`;
 
 vi.mock('next/navigation', () => ({
-    useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+    useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
 }));
 
 let sessionState: { data: unknown; status: string } = {
