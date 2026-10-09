@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { TextInput } from '@sjolystinnovation/app-kit/ui';
 import TextArea from '@/components/TextArea';

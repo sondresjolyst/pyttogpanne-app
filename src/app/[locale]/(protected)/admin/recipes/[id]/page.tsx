@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@sjolystinnovation/app-kit/toast';
 import RecipeForm from '../RecipeForm';
 import RecipeService, { type RecipeDetail } from '@/services/recipeService';
 import { useDictionary } from '@/i18n/DictionaryProvider';

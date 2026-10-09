@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { toast } from 'sonner';
+import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ContentImage from '@/components/ContentImage';
 import RecipeService, { type RecipeSummary } from '@/services/recipeService';

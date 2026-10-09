@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { toast } from '@sjolystinnovation/app-kit/toast';
 import { ArrowDownIcon, ArrowUpIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
 import ContentImage from '@/components/ContentImage';
 import { TextInput } from '@sjolystinnovation/app-kit/ui';
