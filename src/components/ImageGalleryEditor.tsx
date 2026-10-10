@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { ArrowDownIcon, ArrowUpIcon, PhotoIcon, TrashIcon } from '@heroicons/react/24/outline';
-import ContentImage from '@/components/ContentImage';
+import { ContentImage } from '@sjolystinnovation/app-kit/ui';
 import { TextInput } from '@sjolystinnovation/app-kit/ui';
 import ImageService, { type GalleryImageInput } from '@/services/imageService';
 import { move } from '@/lib/arrays';
