@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { TextInput } from '@sjolystinnovation/app-kit/ui';
-import TextArea from '@/components/TextArea';
-import Toggle from '@/components/Toggle';
+import { TextArea, TextInput, Toggle } from '@sjolystinnovation/app-kit/ui';
 import ImageGalleryEditor from '@/components/ImageGalleryEditor';
 import AdvertisingFields from '@/components/AdvertisingFields';
 import GearService, { GEAR_KINDS, type GearItem, type GearItemInput, type GearKind } from '@/services/gearService';

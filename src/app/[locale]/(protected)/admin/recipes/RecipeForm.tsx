@@ -4,10 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { Alert, TextInput } from '@sjolystinnovation/app-kit/ui';
+import { Alert, TextArea, TextInput, Toggle } from '@sjolystinnovation/app-kit/ui';
 
-import TextArea from '@/components/TextArea';
-import Toggle from '@/components/Toggle';
 import ImageGalleryEditor from '@/components/ImageGalleryEditor';
 import AdvertisingFields from '@/components/AdvertisingFields';
 import RecipeService, {
