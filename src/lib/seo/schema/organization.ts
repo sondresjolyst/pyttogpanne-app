@@ -22,7 +22,7 @@ function postalAddress(company: CompanyInfo) {
 /** The business itself, under a stable `@id` that page-scoped nodes point at. */
 export function organizationNode(company: CompanyInfo): SchemaNode {
     return {
-        '@type': 'ComputerStore',
+        '@type': 'Organization',
         '@id': SCHEMA_IDS.organization,
         name: company.name,
         ...(company.legalName && company.legalName !== company.name ? { legalName: company.legalName } : {}),
