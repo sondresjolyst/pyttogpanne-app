@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import ContentImage from '@/components/ContentImage';
+import { ContentImage } from '@sjolystinnovation/app-kit/ui';
 import RecipeService, { type RecipeSummary } from '@/services/recipeService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
