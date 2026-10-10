@@ -26,6 +26,10 @@ describe('organization node', () => {
         expect(organizationNode({ ...company, legalName: 'Pyttogpanne AS' })).toHaveProperty('legalName', 'Pyttogpanne AS');
     });
 
+    it('describes the business as an organization, not a store', () => {
+        expect(organizationNode(company)['@type']).toBe('Organization');
+    });
+
     it('omits VAT and org identifiers until the business is registered', () => {
         const node = organizationNode(company);
         expect(node).not.toHaveProperty('vatID');
