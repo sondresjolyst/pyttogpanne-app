@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { organizationNode, webSiteNode } from '@/lib/seo/schema/organization';
-import { breadcrumbNode, itemListNode } from '@/lib/seo/schema/navigation';
-import { SCHEMA_IDS, serializeGraph } from '@/lib/seo/schema/graph';
+import { organizationNode, webSiteNode, breadcrumbNode, itemListNode, SCHEMA_IDS } from '@/lib/seo/site';
+import { serializeGraph } from '@sjolystinnovation/app-kit/seo';
 import type { CompanyInfo } from '@/lib/companyInfo';
 
 const company: CompanyInfo = {

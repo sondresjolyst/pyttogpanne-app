@@ -8,9 +8,8 @@ import Footer from "./footer";
 import { publicGetOptional } from "@/lib/publicApi";
 import { Branding } from "@/services/brandingService";
 import { LOCALES, LOCALE_TAGS, isLocale, type Locale } from "@/i18n/config";
-import { siteMetadata } from "@/lib/seo/metadata";
-import JsonLd from "@/components/JsonLd";
-import { organizationNode, webSiteNode } from "@/lib/seo/schema/organization";
+import { siteMetadata, organizationNode, webSiteNode } from "@/lib/seo/site";
+import { JsonLd } from "@sjolystinnovation/app-kit/seo";
 import { getCompanyInfo } from "@/lib/companyInfo";
 import { DictionaryProvider } from "@/i18n/DictionaryProvider";
 

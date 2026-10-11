@@ -3,7 +3,8 @@ import { publicGet } from '@/lib/publicApi';
 import { REVALIDATE_TARGETS } from '@/lib/cacheTags';
 import { LegalPage } from '@/services/legalService';
 import { LOCALES, type Locale } from '@/i18n/config';
-import { localeEntries, parseTimestamp } from '@/lib/seo/sitemap';
+import { parseTimestamp } from '@sjolystinnovation/app-kit/seo';
+import { localeEntries } from '@/lib/seo/site';
 
 export const revalidate = 3600;
 
