@@ -7,6 +7,7 @@ import Navbar from "./navbar";
 import Footer from "./footer";
 import { publicGetOptional } from "@/lib/publicApi";
 import { Branding } from "@/services/brandingService";
+import { REVALIDATE_TARGETS } from "@/lib/cacheTags";
 import { LOCALES, LOCALE_TAGS, isLocale, type Locale } from "@/i18n/config";
 import { siteMetadata, organizationNode, webSiteNode } from "@/lib/seo/site";
 import { JsonLd } from "@sjolystinnovation/app-kit/seo";
@@ -34,7 +35,7 @@ export default async function LocaleLayout({
     if (!isLocale(locale)) notFound();
 
     const [branding, company] = await Promise.all([
-        publicGetOptional<Branding>("/branding").then(value => value ?? {}),
+        publicGetOptional<Branding>("/branding", { tags: [REVALIDATE_TARGETS.branding] }).then(value => value ?? {}),
         getCompanyInfo(),
     ]);
 
