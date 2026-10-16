@@ -5,26 +5,12 @@ import ProtectedGate from '@/app/[locale]/(protected)/ProtectedGate';
 import AdminLayout from '@/app/[locale]/(protected)/admin/layout';
 import { DictionaryProvider } from '@/i18n/DictionaryProvider';
 import { closeSessionPrompt, openSessionPrompt } from '@sjolystinnovation/app-kit/session';
+import { makeSession, navigation, resetTestMocks, setSession } from '@sjolystinnovation/app-kit/testing';
 
-const push = vi.fn();
-const replace = vi.fn();
-let pathname = '/no/admin/recipes/new';
-let sessionState: { data: Session | null; status: 'loading' | 'authenticated' | 'unauthenticated' };
+vi.mock('next/navigation', async () => (await import('@sjolystinnovation/app-kit/testing')).nextNavigationMock());
+vi.mock('next-auth/react', async () => (await import('@sjolystinnovation/app-kit/testing')).nextAuthMock());
 
-vi.mock('next/navigation', () => ({
-    useRouter: () => ({ push, replace }),
-    usePathname: () => pathname,
-}));
-
-vi.mock('next-auth/react', () => ({
-    useSession: () => sessionState,
-}));
-
-const session = (roles: string[] = ['Admin']): Session => ({
-    user: { id: '1', name: 'admin', email: 'a@b.no', roles },
-    accessToken: 'token',
-    expires: '',
-});
+const { push, replace } = navigation.router;
 
 // The real nesting: the gate wraps the admin layout, which wraps the form. Testing the gate on
 // its own hid the fact that the layout below it made its own decision to blank the page.
@@ -40,10 +26,9 @@ const tree = () => (
 
 describe('the admin layout inside the gate', () => {
     beforeEach(() => {
-        push.mockClear();
-        replace.mockClear();
-        pathname = '/no/admin/recipes/new';
-        sessionState = { data: session(), status: 'authenticated' };
+        resetTestMocks();
+        navigation.pathname = '/no/admin/recipes/new';
+        setSession(makeSession());
         closeSessionPrompt();
     });
 
@@ -61,7 +46,7 @@ describe('the admin layout inside the gate', () => {
 
         // The cookie is gone and the 401 handler has raised the prompt. The gate declines to
         // redirect, so the layout must not blank the page either, or the form is lost anyway.
-        sessionState = { data: null, status: 'unauthenticated' };
+        setSession(null);
         act(() => openSessionPrompt());
         view.rerender(tree());
 
@@ -71,7 +56,7 @@ describe('the admin layout inside the gate', () => {
     });
 
     it('tells a signed-in user without the admin role that they have no access', () => {
-        sessionState = { data: session([]), status: 'authenticated' };
+        setSession(makeSession({ roles: [] }));
         render(tree());
 
         // The start page redirects to admin, so a redirect there would come straight back.
@@ -82,7 +67,7 @@ describe('the admin layout inside the gate', () => {
     });
 
     it('keeps a non-admin out of the admin page while the prompt is open', () => {
-        sessionState = { data: session([]), status: 'authenticated' };
+        setSession(makeSession({ roles: [] }));
         const view = render(tree());
 
         // The prompt being open must not let a known non-admin through.
@@ -99,7 +84,7 @@ describe('the admin layout inside the gate', () => {
 
         // Another account signed in through the prompt, or the role was taken away. The session
         // now has a user without the role, so the page the admin opened must not stay up.
-        sessionState = { data: session([]), status: 'authenticated' };
+        setSession(makeSession({ roles: [] }));
         act(() => openSessionPrompt());
         view.rerender(tree());
 
@@ -107,18 +92,18 @@ describe('the admin layout inside the gate', () => {
         expect(screen.getByText('Du har ikke tilgang til adminsiden.')).toBeInTheDocument();
 
         // The pass stays cleared after that session is lost too.
-        sessionState = { data: null, status: 'unauthenticated' };
+        setSession(null);
         view.rerender(tree());
 
         expect(screen.queryByText('admin work')).not.toBeInTheDocument();
     });
 
     it('keeps out a non-admin whose session is lost while the prompt is open', () => {
-        sessionState = { data: session([]), status: 'authenticated' };
+        setSession(makeSession({ roles: [] }));
         const view = render(tree());
 
         // No user on the session, so the roles are unknown. This user never had the role here.
-        sessionState = { data: null, status: 'unauthenticated' };
+        setSession(null);
         act(() => openSessionPrompt());
         view.rerender(tree());
 
@@ -131,8 +116,8 @@ describe('the admin layout inside the gate', () => {
 
         // On the next page the session still works but carries no user, so the role is never seen
         // there. The session gate passes this page. The admin pass from the first page must not.
-        pathname = '/no/admin/users';
-        sessionState = { data: { accessToken: 'token', expires: '' } as Session, status: 'authenticated' };
+        navigation.pathname = '/no/admin/users';
+        setSession({ accessToken: 'token', expires: '' } as Session);
         view.rerender(tree());
         act(() => openSessionPrompt());
         view.rerender(tree());

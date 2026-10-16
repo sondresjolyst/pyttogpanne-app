@@ -1,10 +1,10 @@
 import { createLegalService, type LegalPage as AppKitLegalPage } from '@sjolystinnovation/app-kit/api';
+import { LEGAL_PAGE_KEYS } from '@sjolystinnovation/app-kit/seo';
 import axiosInstance from './axiosInstance';
 import publicClient from './publicClient';
-import { revalidateTarget } from '@/lib/revalidate';
-import { REVALIDATE_TARGETS } from '@/lib/cacheTags';
+import { REVALIDATE_TARGETS, revalidateTarget } from '@/lib/cacheTags';
 
-export const LEGAL_KEYS = ['terms', 'privacy', 'cookies'] as const;
+export const LEGAL_KEYS = LEGAL_PAGE_KEYS;
 
 export type LegalKey = (typeof LEGAL_KEYS)[number];
 
