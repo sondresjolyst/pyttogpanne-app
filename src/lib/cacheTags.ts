@@ -1,18 +1,21 @@
+import { defineRevalidateTargets } from '@sjolystinnovation/app-kit/api';
 import { LOCALES } from '@/i18n/config';
 
 // Sent to POST /api/revalidate, which maps each to the ISR paths it affects.
-export const REVALIDATE_TARGETS = {
-    legal: 'legal',
-    branding: 'branding',
-} as const;
+const revalidateTargets = defineRevalidateTargets({
+    locales: LOCALES,
+    targets: {
+        legal: { pages: ['/terms', '/privacy', '/cookies'], root: ['/sitemap.xml'] },
+        // Every page renders branding through the layout, and so does /icon: the tag reaches them all.
+        branding: {},
+    },
+});
 
-export type RevalidateTarget = (typeof REVALIDATE_TARGETS)[keyof typeof REVALIDATE_TARGETS];
+export const REVALIDATE_TARGETS = revalidateTargets.targets;
 
-const perLocale = (paths: string[]): string[] =>
-    LOCALES.flatMap(locale => paths.map(path => `/${locale}${path}`));
+export type RevalidateTarget = keyof typeof REVALIDATE_TARGETS;
 
-export const TARGET_PATHS: Record<RevalidateTarget, string[]> = {
-    legal: [...perLocale(['/terms', '/privacy', '/cookies']), '/sitemap.xml'],
-    // Every page renders branding through the layout, and so does /icon: the tag reaches them all.
-    branding: [],
-};
+export const TARGET_PATHS = revalidateTargets.paths;
+
+/** Purges the pages behind `target` after an admin edit. Best effort, see requestRevalidate. */
+export const revalidateTarget = revalidateTargets.revalidate;

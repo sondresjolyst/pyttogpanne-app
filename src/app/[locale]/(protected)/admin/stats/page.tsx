@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import AdminService, { AdminStats, DailyStat, EmailStats } from '@/services/adminService';
-import StatHistoryChart from '@/components/StatHistoryChart';
+import { StatHistoryChart } from '@sjolystinnovation/app-kit/admin';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 
 function formatBytes(n: number): string {
@@ -47,7 +47,17 @@ export default function AdminStatsPage() {
 
             <div className="rounded-2xl border border-gray-200 p-5">
                 <h2 className="font-bold text-gray-900 mb-4">{dict.admin.overTime}</h2>
-                <StatHistoryChart data={history} />
+                <StatHistoryChart
+                    data={history}
+                    series={[
+                        { key: 'totalUsers', label: dict.stats.users },
+                        { key: 'publishedRecipes', label: dict.admin.published },
+                        { key: 'draftRecipes', label: dict.admin.drafts },
+                        { key: 'gearItemCount', label: dict.stats.gear },
+                        { key: 'contentImages', label: dict.stats.images },
+                    ]}
+                    strings={{ empty: dict.admin.noHistory, chart: dict.admin.overTime }}
+                />
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
