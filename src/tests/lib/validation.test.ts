@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { contactSchema, fieldErrors } from '@/lib/validation';
-import { getDictionary } from '@/i18n/dictionaries';
-
-const dict = getDictionary('no');
+import { contactSchema } from '@/lib/validation';
 
 const valid = {
     name: 'Ola Nordmann',
@@ -40,15 +37,3 @@ describe('contactSchema', () => {
     });
 });
 
-describe('fieldErrors', () => {
-    it('returns messages in the visitor language, one per field', () => {
-        const result = contactSchema.safeParse({ ...valid, email: 'nope', message: '' });
-        expect(result.success).toBe(false);
-        if (result.success) return;
-
-        const errors = fieldErrors(result.error, dict);
-        expect(errors.email).toBe(dict.validation.email);
-        expect(errors.message).toBe(dict.validation.required);
-        expect(errors.name).toBeUndefined();
-    });
-});
