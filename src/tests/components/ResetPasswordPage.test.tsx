@@ -64,6 +64,16 @@ describe('reset password page', () => {
         expect(resetPassword).toHaveBeenCalledWith({ email: 'ola@kunde.no', code: '123456', newPassword: 'Ålesund1A' });
     });
 
+    it('says in Norwegian that the password is changed', async () => {
+        resetPassword.mockReset().mockResolvedValueOnce({ message: 'Password has been reset.' });
+        render(page());
+
+        await submitPassword('Ålesund1A');
+
+        expect(await screen.findByText('Passordet er endret. Du kan logge inn nå.')).toBeInTheDocument();
+        expect(screen.queryByText('Password has been reset.')).not.toBeInTheDocument();
+    });
+
     it('shows a wrong or expired code in Norwegian', async () => {
         resetPassword.mockReset().mockRejectedValueOnce(await refused(400, { message: 'Invalid or expired reset code.', code: 'invalidResetCode' }));
         render(page());
