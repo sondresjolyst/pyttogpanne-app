@@ -10,8 +10,8 @@ const dict = getDictionary('no');
 const save = vi.fn();
 
 vi.mock('@/services/legalService', () => ({
-    LEGAL_KEYS: ['terms', 'privacy', 'cookies'],
     default: {
+        keys: ['terms', 'privacy'],
         listAll: () => Promise.resolve([{ key: 'terms', locale: 'no', title: 'Vilkår', bodyMarkdown: '# Vilkår', updatedAt: '2026-10-01' }]),
         save: (...args: unknown[]) => save(...args),
     },
@@ -46,6 +46,14 @@ const renderPage = () =>
 
 describe('admin legal page', () => {
     beforeEach(() => save.mockReset());
+
+    it('shows a tab for each of the service keys', async () => {
+        renderPage();
+
+        expect(await screen.findByRole('button', { name: 'Vilkår' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Personvern' })).toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Informasjonskapsler' })).not.toBeInTheDocument();
+    });
 
     it('shows a too long title in Norwegian with the limit', async () => {
         save.mockRejectedValueOnce(await refused());
