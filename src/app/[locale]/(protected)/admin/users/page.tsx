@@ -10,7 +10,6 @@ export default function AdminUsersPage() {
     return (
         <AdminUsersPanel
             service={AdminService}
-            getRoles={AdminService.getRoles}
             strings={{
                 users: dict.admin.users,
                 showDeleted: dict.admin.showDeleted,
