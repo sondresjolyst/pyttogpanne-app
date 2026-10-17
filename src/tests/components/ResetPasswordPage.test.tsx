@@ -38,7 +38,7 @@ describe('reset password page', () => {
         await submitPassword('passord1');
 
         expect(resetPassword).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert')).toHaveTextContent(dict.validation.password);
+        expect(screen.getByLabelText(new RegExp(`^${dict.auth.newPassword}`))).toHaveAccessibleDescription(dict.validation.password);
     });
 
     it('does not count Å as an uppercase letter, as the API does not', async () => {
