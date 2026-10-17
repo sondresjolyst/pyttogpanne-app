@@ -76,6 +76,18 @@ describe('the admin settings page', () => {
         expect(screen.queryByText('Branding')).not.toBeInTheDocument();
     });
 
+    it("keeps the app's own hints for the contact recipient and the registered name", async () => {
+        render(
+            <DictionaryProvider locale="no">
+                <AdminSettingsPage />
+            </DictionaryProvider>,
+        );
+
+        expect(await screen.findByText(dict.admin.contactRecipientHint)).toBeInTheDocument();
+        expect(screen.getByText(dict.admin.legalNameHint)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^E-post som vises på nettsiden/)).toBeInTheDocument();
+    });
+
     it('shows the API field errors in Norwegian', async () => {
         update.mockRejectedValueOnce(await refusedSettings());
         render(
@@ -83,12 +95,12 @@ describe('the admin settings page', () => {
                 <AdminSettingsPage />
             </DictionaryProvider>,
         );
-        const org = await screen.findByLabelText(new RegExp(`^${dict.admin.orgNumber}`));
+        const org = await screen.findByLabelText(/^Organisasjonsnummer/);
 
         await userEvent.click(screen.getByRole('button', { name: dict.common.save }));
 
-        await waitFor(() => expect(org).toHaveAccessibleDescription(dict.validation.orgNumber));
-        expect(screen.getByLabelText(new RegExp(`^${dict.admin.companyName}`))).toHaveAccessibleDescription('Bruk 100 eller færre tegn');
+        await waitFor(() => expect(org).toHaveAccessibleDescription('Organisasjonsnummeret er ugyldig. Et organisasjonsnummer består av 9 siffer.'));
+        expect(screen.getByLabelText(/^Firmanavn/)).toHaveAccessibleDescription('Bruk 100 eller færre tegn.');
     });
 
     it('shows a refused logo in Norwegian', async () => {

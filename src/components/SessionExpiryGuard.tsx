@@ -2,7 +2,7 @@
 
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { SessionExpiryGuard as Guard } from '@sjolystinnovation/app-kit/session/react';
-import { useCredentialsFormStrings } from './CredentialsForm';
+import { nbCredentialsFormStrings, nbSessionExpiryGuardStrings } from '@sjolystinnovation/app-kit/locales/nb';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
 
@@ -12,16 +12,8 @@ export default function SessionExpiryGuard() {
         <Guard
             loginHref={localeHref(locale, '/login')}
             onRestored={() => toast.success(dict.auth.sessionRestored)}
-            strings={{
-                expiredTitle: dict.auth.sessionExpiredTitle,
-                expiredBody: dict.auth.sessionExpiredBody,
-                expiringSoon: dict.auth.sessionExpiringSoon,
-                reSignIn: dict.auth.reSignIn,
-                notRestored: dict.auth.sessionNotRestored,
-                wrongUser: dict.auth.sessionWrongUser,
-                close: dict.common.close,
-            }}
-            formStrings={useCredentialsFormStrings()}
+            strings={nbSessionExpiryGuardStrings}
+            formStrings={nbCredentialsFormStrings}
         />
     );
 }

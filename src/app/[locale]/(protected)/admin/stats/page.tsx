@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import AdminService, { AdminStats, DailyStat, EmailStatsService } from '@/services/adminService';
 import { EmailStatsPanel, StatHistoryChart } from '@sjolystinnovation/app-kit/admin';
-import { nbEmailStatsPanelStrings } from '@sjolystinnovation/app-kit/locales/nb';
+import { nbEmailStatsPanelStrings, nbStatHistoryChartStrings } from '@sjolystinnovation/app-kit/locales/nb';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 
 function formatBytes(n: number): string {
@@ -55,7 +55,7 @@ export default function AdminStatsPage() {
                         { key: 'gearItemCount', label: dict.stats.gear },
                         { key: 'contentImages', label: dict.stats.images },
                     ]}
-                    strings={{ empty: dict.admin.noHistory, chart: dict.admin.overTime }}
+                    strings={nbStatHistoryChartStrings}
                 />
             </div>
 

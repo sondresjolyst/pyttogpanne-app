@@ -54,18 +54,18 @@ describe('admin legal page', () => {
 
         await userEvent.click(screen.getByRole('button', { name: dict.common.save }));
 
-        await waitFor(() => expect(title).toHaveAccessibleDescription('Bruk 200 eller færre tegn'));
+        await waitFor(() => expect(title).toHaveAccessibleDescription('Bruk 200 eller færre tegn.'));
         expect(screen.queryByText('At most 200 characters.')).not.toBeInTheDocument();
     });
 
     it('marks a blank content field in Norwegian without calling the API', async () => {
         renderPage();
-        const body = await screen.findByLabelText(dict.admin.bodyMarkdown);
+        const body = await screen.findByLabelText('Innhold (Markdown)');
         await userEvent.clear(body);
 
         await userEvent.click(screen.getByRole('button', { name: dict.common.save }));
 
-        expect(body).toHaveAccessibleDescription(dict.validation.required);
+        expect(body).toHaveAccessibleDescription('Du må fylle ut dette feltet.');
         expect(save).not.toHaveBeenCalled();
     });
 });
