@@ -22,22 +22,18 @@
     "add": "Legg til",
     "back": "Tilbake",
     "no": "Nei",
-    "notFound": "Fant ikke siden",
     "remove": "Fjern",
     "show": "Vis",
     "actionFailed": "Handlingen feilet"
   },
   "validation": {
-    "required": "Feltet må fylles ut",
-    "email": "Skriv inn en gyldig e-postadresse",
-    "tooLong": "Teksten er for lang"
+    "required": "Feltet må fylles ut"
   },
   "auth": {
     "sessionRestored": "Du er logget inn igjen. Prøv å lagre på nytt."
   },
   "footer": {
     "orgNumber": "Org.nr",
-    "vatRegistered": "Registrert i Merverdiavgiftsregisteret",
     "terms": "Vilkår",
     "privacy": "Personvern",
     "cookies": "Informasjonskapsler",
