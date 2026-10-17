@@ -77,6 +77,6 @@ describe('the admin settings page', () => {
         await userEvent.click(screen.getByRole('button', { name: dict.common.save }));
 
         await waitFor(() => expect(org).toHaveAccessibleDescription(dict.validation.orgNumber));
-        expect(screen.getByLabelText(new RegExp(`^${dict.admin.companyName}`))).toHaveAccessibleDescription('Høyst 100 tegn');
+        expect(screen.getByLabelText(new RegExp(`^${dict.admin.companyName}`))).toHaveAccessibleDescription('Bruk 100 eller færre tegn');
     });
 });
