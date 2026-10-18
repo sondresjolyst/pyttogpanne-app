@@ -1,4 +1,4 @@
-import { formatOrgNumber, mergeCompanyInfo, type CompanyInfo } from '@sjolystinnovation/app-kit/api';
+import { formatOrgNumber, mergeCompanyInfo, type CompanyInfo } from '@sjolystinnovation/app-kit/company';
 import { publicGetOptional } from '@/lib/publicApi';
 import { COMPANY } from '@/lib/company';
 
