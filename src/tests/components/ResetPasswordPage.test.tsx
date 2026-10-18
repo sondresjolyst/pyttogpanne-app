@@ -39,13 +39,16 @@ describe('reset password page', () => {
         resetPassword.mockReset().mockResolvedValue({ message: 'ok' });
     });
 
-    it('does not send a password the API would refuse', async () => {
+    it('does not send a password the API would refuse, and shows the rules once, in the error', async () => {
         render(page());
+        expect(screen.getByText(text.passwordHint!)).toBeInTheDocument();
 
         await submitPassword('passord1');
 
         expect(resetPassword).not.toHaveBeenCalled();
         expect(screen.getByLabelText(new RegExp(`^${text.newPassword}`))).toHaveAccessibleDescription(text.passwordInvalid!);
+        expect(screen.queryByText(text.passwordHint!)).not.toBeInTheDocument();
+        expect(document.body.textContent!.split(text.passwordHint!)).toHaveLength(2);
     });
 
     it('does not count Å as an uppercase letter, as the API does not', async () => {
