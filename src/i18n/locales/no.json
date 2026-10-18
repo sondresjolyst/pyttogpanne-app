@@ -4,7 +4,6 @@
     "description": "Administrasjon av oppskrifter, kategorier og utstyrstips for Pyttogpanne-appen."
   },
   "nav": {
-    "home": "Hjem",
     "admin": "Admin",
     "signIn": "Logg inn",
     "signOut": "Logg ut",
@@ -20,10 +19,7 @@
     "delete": "Slett",
     "edit": "Rediger",
     "add": "Legg til",
-    "back": "Tilbake",
-    "no": "Nei",
     "remove": "Fjern",
-    "show": "Vis",
     "actionFailed": "Handlingen feilet"
   },
   "validation": {
@@ -40,11 +36,9 @@
     "operatedBy": "Drives av"
   },
   "recipes": {
-    "title": "Oppskrifter",
     "servings": "Porsjoner",
     "prepMinutes": "Forberedelse (min)",
     "cookMinutes": "Steketid (min)",
-    "totalMinutes": "Tid totalt",
     "difficulty": "Vanskelighetsgrad",
     "difficultyEnkel": "Enkel",
     "difficultyMiddels": "Middels",
@@ -56,7 +50,6 @@
     "categories": "Kategorier"
   },
   "gear": {
-    "title": "Utstyr og turtips",
     "kind": "Type",
     "kindUtstyr": "Utstyr",
     "kindTips": "Turtips",
@@ -75,7 +68,6 @@
     "users": "Brukere",
     "settings": "Innstillinger",
     "stats": "Statistikk",
-    "language": "Språk",
     "cardRecipes": "Opprett, rediger og publiser oppskrifter.",
     "cardCategories": "Kategoriene oppskriftene sorteres i.",
     "cardGear": "Utstyr og turtips til appen.",
