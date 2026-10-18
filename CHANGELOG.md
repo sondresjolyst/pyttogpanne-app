@@ -1,5 +1,42 @@
 # Changelog
 
+## [1.1.0](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.5...v1.1.0) (2026-10-18)
+
+
+### Features
+
+* **admin:** move to app-kit 1.0.1 with its Norwegian texts, email stats panel and field errors ([#83](https://github.com/sondresjolyst/pyttogpanne-app/issues/83)) ([e2f276a](https://github.com/sondresjolyst/pyttogpanne-app/commit/e2f276a2bc890716b0efe239353fc5fcc242b81a))
+* sign in through app-kit and say when sign-in is unavailable ([#43](https://github.com/sondresjolyst/pyttogpanne-app/issues/43)) ([c7b5897](https://github.com/sondresjolyst/pyttogpanne-app/commit/c7b58977ad08291525469aeca73279099343003c))
+
+
+### Bug Fixes
+
+* **admin:** show the branding section in the app's language ([#71](https://github.com/sondresjolyst/pyttogpanne-app/issues/71)) ([66291ce](https://github.com/sondresjolyst/pyttogpanne-app/commit/66291ce06fa4a4966b350a07cdd59b346b0b8d2d)), closes [#68](https://github.com/sondresjolyst/pyttogpanne-app/issues/68)
+* **build:** build the public pages when the API is down and move to app-kit 1.0.2 ([#84](https://github.com/sondresjolyst/pyttogpanne-app/issues/84)) ([b3d0b46](https://github.com/sondresjolyst/pyttogpanne-app/commit/b3d0b46cbe9d5d3a2cac6cbb6e3f38891bff1185))
+* **csp:** stop zod from trying eval, which the content security policy blocks ([#61](https://github.com/sondresjolyst/pyttogpanne-app/issues/61)) ([fea6afc](https://github.com/sondresjolyst/pyttogpanne-app/commit/fea6afc38627eec11cbfa5ae6a951301cc194f23))
+* **docker:** default SITE_ENV to dev so a build without it is not crawled ([#70](https://github.com/sondresjolyst/pyttogpanne-app/issues/70)) ([d5c21fa](https://github.com/sondresjolyst/pyttogpanne-app/commit/d5c21faeba522561cbaadd24e306476bfe78aa8a))
+* let one gate decide whether a protected page may render ([#33](https://github.com/sondresjolyst/pyttogpanne-app/issues/33)) ([b9f7312](https://github.com/sondresjolyst/pyttogpanne-app/commit/b9f7312c6beb1b29838bf0ac9b805c3e8a7f5f7a))
+* **seo:** describe the site as an organization and remove unused SmartLink ([#49](https://github.com/sondresjolyst/pyttogpanne-app/issues/49)) ([48b2058](https://github.com/sondresjolyst/pyttogpanne-app/commit/48b2058566682bf3ea3e7f85d6d644ec134561ab)), closes [#48](https://github.com/sondresjolyst/pyttogpanne-app/issues/48)
+* show a no access message to signed-in users without the admin role ([#42](https://github.com/sondresjolyst/pyttogpanne-app/issues/42)) ([fbf4a88](https://github.com/sondresjolyst/pyttogpanne-app/commit/fbf4a88aa7c3af06b76cd7cadc7795bb1c1eb9f0))
+* use app-kit for admin access, public fetches, session renewal, quiet error toasts and password rules ([#46](https://github.com/sondresjolyst/pyttogpanne-app/issues/46)) ([3fe9d17](https://github.com/sondresjolyst/pyttogpanne-app/commit/3fe9d17cf94abb43d4bc913b01de67e2eaa36141))
+
+
+### Dependencies
+
+* **app-kit:** update @sjolystinnovation/app-kit to 0.16.0 ([#62](https://github.com/sondresjolyst/pyttogpanne-app/issues/62)) ([32cd1aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/32cd1aaae198ae6328c154f796b48fe9f3a30432))
+* **docker:** bump `node` from 26.10.0-slim to 26.11.1-slim ([#76](https://github.com/sondresjolyst/pyttogpanne-app/issues/76)) ([29184c5](https://github.com/sondresjolyst/pyttogpanne-app/commit/29184c56918b87a95e39831a8ecf9cbdf4ea6d3e))
+* **npm:** bump @types/node from 26.6.3 to 26.6.4 in the types group ([#56](https://github.com/sondresjolyst/pyttogpanne-app/issues/56)) ([5e48d3d](https://github.com/sondresjolyst/pyttogpanne-app/commit/5e48d3d56d3701462ae61b673fcc7ef5c64f406a))
+* **npm:** bump @types/node from 26.6.4 to 26.6.5 in the types group ([#81](https://github.com/sondresjolyst/pyttogpanne-app/issues/81)) ([983ebb1](https://github.com/sondresjolyst/pyttogpanne-app/commit/983ebb1660fc0a0963ec41be600a09f62e50ab8a))
+* **npm:** bump `next` from 16.3.7 to 16.4.0 ([#44](https://github.com/sondresjolyst/pyttogpanne-app/issues/44)) ([c3bfc49](https://github.com/sondresjolyst/pyttogpanne-app/commit/c3bfc49938d9cd46bad337fe74a65080c63f1591))
+* **npm:** bump `postcss` from 8.5.28 to 8.5.29 ([#80](https://github.com/sondresjolyst/pyttogpanne-app/issues/80)) ([8f49a2e](https://github.com/sondresjolyst/pyttogpanne-app/commit/8f49a2e803e635f12290eac2c7f9a3826983ed27))
+* **npm:** bump `sharp` from 0.35.4 to 0.35.5 ([#39](https://github.com/sondresjolyst/pyttogpanne-app/issues/39)) ([1b15c51](https://github.com/sondresjolyst/pyttogpanne-app/commit/1b15c5191e30a7422e37a1a2db6058ef9f3cc494))
+* **npm:** bump `source-map-js` from 1.2.1 to 1.2.2 ([#38](https://github.com/sondresjolyst/pyttogpanne-app/issues/38)) ([de2009e](https://github.com/sondresjolyst/pyttogpanne-app/commit/de2009ec725ab9cc00dc716c823eafc0e5502e20))
+* **npm:** bump eslint-config-next from 16.3.7 to 16.3.8 in the next group ([#53](https://github.com/sondresjolyst/pyttogpanne-app/issues/53)) ([07a683d](https://github.com/sondresjolyst/pyttogpanne-app/commit/07a683d8c370626699000c5ea84c7daa3c4e8bfe))
+* **npm:** bump eslint-config-next from 16.3.8 to 16.4.0 in the next group ([#77](https://github.com/sondresjolyst/pyttogpanne-app/issues/77)) ([58a3b25](https://github.com/sondresjolyst/pyttogpanne-app/commit/58a3b25c90e64891a55f9f261ee9347df193614e))
+* **npm:** bump the next group with 2 updates ([#36](https://github.com/sondresjolyst/pyttogpanne-app/issues/36)) ([c71b214](https://github.com/sondresjolyst/pyttogpanne-app/commit/c71b2147befbd958586e8106f7db07db1732bce2))
+* **npm:** bump the testing group across 1 directory with 2 updates ([#79](https://github.com/sondresjolyst/pyttogpanne-app/issues/79)) ([eb6f457](https://github.com/sondresjolyst/pyttogpanne-app/commit/eb6f45745cfe4237dbfa6d675b4e4f6ee7d8cd6b))
+* **npm:** bump vitest from 5.0.2 to 5.0.3 in the testing group ([#55](https://github.com/sondresjolyst/pyttogpanne-app/issues/55)) ([4bf04a3](https://github.com/sondresjolyst/pyttogpanne-app/commit/4bf04a3b2368d750d20e9bf937e209b82ac417ac))
+
 ## [1.0.5](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.4...v1.0.5) (2026-10-04)
 
 
