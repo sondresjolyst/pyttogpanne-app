@@ -4,8 +4,12 @@ import { LegalPagesEditor } from '@sjolystinnovation/app-kit/admin';
 import { nbLegalPageKeyLabels, nbLegalPagesEditorStrings } from '@sjolystinnovation/app-kit/locales/nb';
 import LegalService from '@/services/legalService';
 import { LOCALES, LOCALE_LABELS } from '@/i18n/config';
+import { useDictionary } from '@/i18n/DictionaryProvider';
+import { intlLocale } from '@/lib/format';
 
 export default function AdminLegalPage() {
+    const { locale } = useDictionary();
+
     return (
         <LegalPagesEditor
             service={LegalService}
@@ -13,6 +17,7 @@ export default function AdminLegalPage() {
             locales={LOCALES}
             localeLabels={LOCALE_LABELS}
             strings={nbLegalPagesEditorStrings}
+            dateLocale={intlLocale(locale)}
         />
     );
 }
