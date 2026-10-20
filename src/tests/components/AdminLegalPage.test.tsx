@@ -8,12 +8,14 @@ import { getDictionary } from '@/i18n/dictionaries';
 
 const dict = getDictionary('no');
 const save = vi.fn();
+const listRevisions = vi.fn();
 
 vi.mock('@/services/legalService', () => ({
     default: {
         keys: ['terms', 'privacy'],
         listAll: () => Promise.resolve([{ key: 'terms', locale: 'no', title: 'Vilkår', bodyMarkdown: '# Vilkår', updatedAt: '2026-10-01' }]),
         save: (...args: unknown[]) => save(...args),
+        listRevisions: (...args: unknown[]) => listRevisions(...args),
     },
 }));
 
@@ -45,7 +47,10 @@ const renderPage = () =>
     );
 
 describe('admin legal page', () => {
-    beforeEach(() => save.mockReset());
+    beforeEach(() => {
+        save.mockReset();
+        listRevisions.mockReset().mockResolvedValue([]);
+    });
 
     it('shows a tab for each of the service keys', async () => {
         renderPage();
@@ -75,5 +80,19 @@ describe('admin legal page', () => {
 
         expect(body).toHaveAccessibleDescription('Du må fylle ut dette feltet.');
         expect(save).not.toHaveBeenCalled();
+    });
+
+    it('lists the saved versions of the open page with Norwegian dates', async () => {
+        listRevisions.mockResolvedValue([
+            { id: 2, savedAt: '2026-10-17T12:00:00Z', title: 'Vilkår' },
+            { id: 1, savedAt: '2026-10-16T12:00:00Z', title: 'Vilkår' },
+        ]);
+        renderPage();
+
+        const versions = await screen.findAllByRole('button', { pressed: false, name: /okt\. 2026/ });
+        expect(versions).toHaveLength(2);
+        expect(versions[0]).toHaveTextContent(/17\. okt\. 2026/);
+        expect(versions[1]).toHaveTextContent(/16\. okt\. 2026/);
+        expect(listRevisions).toHaveBeenCalledWith('terms', 'no');
     });
 });
