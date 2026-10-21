@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.0...v1.1.1) (2026-10-21)
+
+
+### Dependencies
+
+* **npm:** bump @sjolystinnovation/app-kit to 1.3.0 ([#88](https://github.com/sondresjolyst/pyttogpanne-app/issues/88)) ([b231a62](https://github.com/sondresjolyst/pyttogpanne-app/commit/b231a62ade627dafa617cc614b171091cf231b02))
+* **npm:** bump `follow-redirects` from 1.16.0 to 1.16.1 ([#90](https://github.com/sondresjolyst/pyttogpanne-app/issues/90)) ([fbffca0](https://github.com/sondresjolyst/pyttogpanne-app/commit/fbffca0b64b4d748294e211f5d50df8003f85056))
+
 ## [1.1.0](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.0.5...v1.1.0) (2026-10-18)
 
 
