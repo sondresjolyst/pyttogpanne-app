@@ -61,6 +61,7 @@
     "noAccess": "Du har ikke tilgang til adminsiden.",
     "noAccessHint": "Logg ut og logg inn med en konto som har admin-tilgang.",
     "dashboard": "Oversikt",
+    "breadcrumb": "Brødsmulesti",
     "recipes": "Oppskrifter",
     "categories": "Kategorier",
     "gear": "Utstyr",
