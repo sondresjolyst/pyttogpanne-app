@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.1...v1.1.2) (2026-10-22)
+
+
+### Dependencies
+
+* **npm:** bump next to 16.4.2 ([#91](https://github.com/sondresjolyst/pyttogpanne-app/issues/91)) ([b971749](https://github.com/sondresjolyst/pyttogpanne-app/commit/b971749bfeb379d8c35e49528521039883e55b8d))
+
 ## [1.1.1](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.0...v1.1.1) (2026-10-21)
 
 
