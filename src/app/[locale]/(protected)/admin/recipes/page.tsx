@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { ContentImage } from '@sjolystinnovation/app-kit/ui';
+import { nbConfirmDialogStrings } from '@sjolystinnovation/app-kit/locales/nb';
+import { ConfirmDialog, ContentImage, fillTemplate } from '@sjolystinnovation/app-kit/ui';
 import RecipeService, { type RecipeSummary } from '@/services/recipeService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
 import { localeHref } from '@/i18n/config';
@@ -12,6 +13,7 @@ import { localeHref } from '@/i18n/config';
 export default function AdminRecipesPage() {
     const { locale, dict } = useDictionary();
     const [recipes, setRecipes] = useState<RecipeSummary[] | null>(null);
+    const [pending, setPending] = useState<RecipeSummary | null>(null);
 
     useEffect(() => {
         RecipeService.list()
@@ -20,7 +22,6 @@ export default function AdminRecipesPage() {
     }, []);
 
     const remove = async (recipe: RecipeSummary) => {
-        if (!confirm(dict.admin.confirmDeleteRecipe.replace('{title}', recipe.title))) return;
         try {
             await RecipeService.remove(recipe.id);
             setRecipes(list => (list ?? []).filter(r => r.id !== recipe.id));
@@ -82,7 +83,7 @@ export default function AdminRecipesPage() {
                                 <button
                                     type="button"
                                     aria-label={dict.common.delete}
-                                    onClick={() => remove(recipe)}
+                                    onClick={() => setPending(recipe)}
                                     className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-red-400 hover:text-red-600"
                                 >
                                     <TrashIcon className="h-4 w-4" />
@@ -91,6 +92,20 @@ export default function AdminRecipesPage() {
                         </li>
                     ))}
                 </ul>
+            )}
+            {pending && (
+                <ConfirmDialog
+                    title={dict.common.delete}
+                    message={fillTemplate(dict.admin.confirmDeleteRecipe, { title: pending.title })}
+                    confirmLabel={dict.common.delete}
+                    strings={nbConfirmDialogStrings}
+                    onConfirm={() => {
+                        const target = pending;
+                        setPending(null);
+                        void remove(target);
+                    }}
+                    onClose={() => setPending(null)}
+                />
             )}
         </div>
     );

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { CheckIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { TextInput } from '@sjolystinnovation/app-kit/ui';
+import { nbConfirmDialogStrings } from '@sjolystinnovation/app-kit/locales/nb';
+import { ConfirmDialog, TextInput } from '@sjolystinnovation/app-kit/ui';
 import RecipeCategoryService from '@/services/recipeCategoryService';
 import type { RecipeCategory } from '@/services/recipeService';
 import { useDictionary } from '@/i18n/DictionaryProvider';
@@ -19,6 +20,7 @@ const emptyDraft = (sortOrder: number): Draft => ({ key: '', name: '', sortOrder
 export default function AdminCategoriesPage() {
     const { dict } = useDictionary();
     const [categories, setCategories] = useState<RecipeCategory[] | null>(null);
+    const [pending, setPending] = useState<RecipeCategory | null>(null);
     const [draft, setDraft] = useState<Draft>(emptyDraft(10));
     const [editingId, setEditingId] = useState<number | null>(null);
     const [edit, setEdit] = useState<Draft>(emptyDraft(10));
@@ -55,7 +57,6 @@ export default function AdminCategoriesPage() {
     };
 
     const remove = async (category: RecipeCategory) => {
-        if (!confirm(dict.admin.confirmDelete)) return;
         try {
             await RecipeCategoryService.remove(category.id);
             toast.success(dict.admin.categoryDeleted);
@@ -125,7 +126,7 @@ export default function AdminCategoriesPage() {
                                     >
                                         <PencilSquareIcon className="h-4 w-4" />
                                     </button>
-                                    <button type="button" aria-label={dict.common.delete} onClick={() => remove(category)} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-red-400 hover:text-red-600">
+                                    <button type="button" aria-label={dict.common.delete} onClick={() => setPending(category)} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-red-400 hover:text-red-600">
                                         <TrashIcon className="h-4 w-4" />
                                     </button>
                                 </>
@@ -133,6 +134,20 @@ export default function AdminCategoriesPage() {
                         </li>
                     ))}
                 </ul>
+            )}
+            {pending && (
+                <ConfirmDialog
+                    title={dict.common.delete}
+                    message={dict.admin.confirmDelete}
+                    confirmLabel={dict.common.delete}
+                    strings={nbConfirmDialogStrings}
+                    onConfirm={() => {
+                        const target = pending;
+                        setPending(null);
+                        void remove(target);
+                    }}
+                    onClose={() => setPending(null)}
+                />
             )}
         </div>
     );
