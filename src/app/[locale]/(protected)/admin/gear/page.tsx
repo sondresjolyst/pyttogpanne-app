@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { toast } from '@sjolystinnovation/app-kit/toast';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { TextArea, TextInput, Toggle } from '@sjolystinnovation/app-kit/ui';
+import { nbConfirmDialogStrings } from '@sjolystinnovation/app-kit/locales/nb';
+import { ConfirmDialog, fillTemplate, TextArea, TextInput, Toggle } from '@sjolystinnovation/app-kit/ui';
 import ImageGalleryEditor from '@/components/ImageGalleryEditor';
 import AdvertisingFields from '@/components/AdvertisingFields';
 import GearService, { GEAR_KINDS, type GearItem, type GearItemInput, type GearKind } from '@/services/gearService';
@@ -25,6 +26,8 @@ const emptyDraft = (sortOrder: number): GearItemInput => ({
 export default function AdminGearPage() {
     const { dict } = useDictionary();
     const [items, setItems] = useState<GearItem[] | null>(null);
+    const [pending, setPending] = useState<GearItem | null>(null);
+    const [deleting, setDeleting] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [draft, setDraft] = useState<GearItemInput>(emptyDraft(10));
     const [saving, setSaving] = useState(false);
@@ -75,7 +78,6 @@ export default function AdminGearPage() {
     };
 
     const remove = async (item: GearItem) => {
-        if (!confirm(dict.admin.confirmDeleteGear.replace('{title}', item.title))) return;
         try {
             await GearService.remove(item.id);
             toast.success(dict.admin.gearDeleted);
@@ -160,12 +162,29 @@ export default function AdminGearPage() {
                             <button type="button" aria-label={dict.common.edit} onClick={() => startEdit(item)} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-gray-400">
                                 <PencilSquareIcon className="h-4 w-4" />
                             </button>
-                            <button type="button" aria-label={dict.common.delete} onClick={() => remove(item)} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-red-400 hover:text-red-600">
+                            <button type="button" aria-label={dict.common.delete} onClick={() => setPending(item)} className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:border-red-400 hover:text-red-600">
                                 <TrashIcon className="h-4 w-4" />
                             </button>
                         </li>
                     ))}
                 </ul>
+            )}
+            {pending && (
+                <ConfirmDialog
+                    title={dict.common.delete}
+                    message={fillTemplate(dict.admin.confirmDeleteGear, { title: pending.title })}
+                    confirmLabel={dict.common.delete}
+                    strings={nbConfirmDialogStrings}
+                    busy={deleting}
+                    onConfirm={() => {
+                        setDeleting(true);
+                        void remove(pending).finally(() => {
+                            setDeleting(false);
+                            setPending(null);
+                        });
+                    }}
+                    onClose={() => setPending(null)}
+                />
             )}
         </div>
     );

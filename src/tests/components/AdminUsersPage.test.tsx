@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import AdminUsersPage from '@/app/[locale]/(protected)/admin/users/page';
 import { DictionaryProvider } from '@/i18n/DictionaryProvider';
@@ -78,13 +78,13 @@ describe('admin users page', () => {
     });
 
     it('says in Norwegian why the last admin cannot be deleted', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(true);
         api.delete.mockRejectedValueOnce(
             refusal(409, { message: 'The last admin account cannot be deleted. Give someone else the admin role first.', code: 'lastAdmin' }),
         );
         renderPage();
 
         await userEvent.click(await screen.findByRole('button', { name: 'Slett' }));
+        await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Slett' }));
 
         await waitFor(() =>
             expect(toastSpies.error).toHaveBeenCalledWith('Den siste administratoren kan ikke slettes. Gi administratorrollen til noen andre først.'),
