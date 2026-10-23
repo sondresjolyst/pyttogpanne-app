@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.2...v1.1.3) (2026-10-23)
+
+
+### Miscellaneous Chores
+
+* release 1.1.3 ([#95](https://github.com/sondresjolyst/pyttogpanne-app/issues/95)) ([bbab95e](https://github.com/sondresjolyst/pyttogpanne-app/commit/bbab95e62dafdbc876b792781bf9a2ec58ea8ea8))
+
 ## [1.1.2](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.1...v1.1.2) (2026-10-22)
 
 
