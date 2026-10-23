@@ -14,6 +14,7 @@ export default function AdminRecipesPage() {
     const { locale, dict } = useDictionary();
     const [recipes, setRecipes] = useState<RecipeSummary[] | null>(null);
     const [pending, setPending] = useState<RecipeSummary | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         RecipeService.list()
@@ -99,10 +100,13 @@ export default function AdminRecipesPage() {
                     message={fillTemplate(dict.admin.confirmDeleteRecipe, { title: pending.title })}
                     confirmLabel={dict.common.delete}
                     strings={nbConfirmDialogStrings}
+                    busy={deleting}
                     onConfirm={() => {
-                        const target = pending;
-                        setPending(null);
-                        void remove(target);
+                        setDeleting(true);
+                        void remove(pending).finally(() => {
+                            setDeleting(false);
+                            setPending(null);
+                        });
                     }}
                     onClose={() => setPending(null)}
                 />

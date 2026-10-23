@@ -27,6 +27,7 @@ export default function AdminGearPage() {
     const { dict } = useDictionary();
     const [items, setItems] = useState<GearItem[] | null>(null);
     const [pending, setPending] = useState<GearItem | null>(null);
+    const [deleting, setDeleting] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
     const [draft, setDraft] = useState<GearItemInput>(emptyDraft(10));
     const [saving, setSaving] = useState(false);
@@ -174,10 +175,13 @@ export default function AdminGearPage() {
                     message={fillTemplate(dict.admin.confirmDeleteGear, { title: pending.title })}
                     confirmLabel={dict.common.delete}
                     strings={nbConfirmDialogStrings}
+                    busy={deleting}
                     onConfirm={() => {
-                        const target = pending;
-                        setPending(null);
-                        void remove(target);
+                        setDeleting(true);
+                        void remove(pending).finally(() => {
+                            setDeleting(false);
+                            setPending(null);
+                        });
                     }}
                     onClose={() => setPending(null)}
                 />

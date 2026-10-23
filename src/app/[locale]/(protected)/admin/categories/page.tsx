@@ -21,6 +21,7 @@ export default function AdminCategoriesPage() {
     const { dict } = useDictionary();
     const [categories, setCategories] = useState<RecipeCategory[] | null>(null);
     const [pending, setPending] = useState<RecipeCategory | null>(null);
+    const [deleting, setDeleting] = useState(false);
     const [draft, setDraft] = useState<Draft>(emptyDraft(10));
     const [editingId, setEditingId] = useState<number | null>(null);
     const [edit, setEdit] = useState<Draft>(emptyDraft(10));
@@ -141,10 +142,13 @@ export default function AdminCategoriesPage() {
                     message={dict.admin.confirmDelete}
                     confirmLabel={dict.common.delete}
                     strings={nbConfirmDialogStrings}
+                    busy={deleting}
                     onConfirm={() => {
-                        const target = pending;
-                        setPending(null);
-                        void remove(target);
+                        setDeleting(true);
+                        void remove(pending).finally(() => {
+                            setDeleting(false);
+                            setPending(null);
+                        });
                     }}
                     onClose={() => setPending(null)}
                 />
