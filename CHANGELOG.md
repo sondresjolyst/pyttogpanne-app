@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.4](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.3...v1.1.4) (2026-10-25)
+
+
+### Dependencies
+
+* **npm:** bump `vite` from 8.0.16 to 8.3.5 ([#104](https://github.com/sondresjolyst/pyttogpanne-app/issues/104)) ([db384ec](https://github.com/sondresjolyst/pyttogpanne-app/commit/db384ecbcd3bdf658618b2566cd1e307e261c9a3))
+* **npm:** bump `zod` from 4.6.5 to 4.6.7 ([#102](https://github.com/sondresjolyst/pyttogpanne-app/issues/102)) ([c4ee479](https://github.com/sondresjolyst/pyttogpanne-app/commit/c4ee479b30ee909a47330c3457a7ffbb508de723))
+* **npm:** bump postcss from 8.5.29 to 8.5.30 in the tailwind group ([#101](https://github.com/sondresjolyst/pyttogpanne-app/issues/101)) ([4b10a1b](https://github.com/sondresjolyst/pyttogpanne-app/commit/4b10a1bac3e51c4097bbe751e22ab4fd97a09578))
+* **npm:** bump the react group with 2 updates ([#98](https://github.com/sondresjolyst/pyttogpanne-app/issues/98)) ([b56b12e](https://github.com/sondresjolyst/pyttogpanne-app/commit/b56b12e91acd2b1a1756c708832258984f368cd8))
+* **npm:** bump the testing group across 1 directory with 3 updates ([#100](https://github.com/sondresjolyst/pyttogpanne-app/issues/100)) ([06e9b4a](https://github.com/sondresjolyst/pyttogpanne-app/commit/06e9b4a24de23a33a3453eeab8f8a1c483df0a08))
+
 ## [1.1.3](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.2...v1.1.3) (2026-10-23)
 
 
