@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.5](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.4...v1.1.5) (2026-11-08)
+
+
+### Dependencies
+
+* **docker:** update node from 26.12.1-slim to 26.13.0-slim ([19cd358](https://github.com/sondresjolyst/pyttogpanne-app/commit/19cd358c2c5b1dfd37e39531897adaffda486c09))
+* **npm:** update @heroicons/react from ^2.2.0 to 2.2.0 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update @sjolystinnovation/app-kit from ^1.6.1 to 1.6.1 ([6bb9566](https://github.com/sondresjolyst/pyttogpanne-app/commit/6bb9566c351c48dcd05eed8f01562c24638e469b))
+* **npm:** update axios from ^1.20.0 to 1.20.0 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update next from ^16.4.2 to 16.4.2 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update next-auth from ^4.24.15 to 4.24.15 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update react from ^19.3.1 to 19.3.1 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update react-dom from ^19.3.1 to 19.3.1 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update react-markdown from ^10.1.0 to 10.1.0 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update rehype-sanitize from ^6.0.0 to 6.0.0 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update remark-gfm from ^4.0.1 to 4.0.1 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update sonner from ^2.0.8 to 2.0.8 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+* **npm:** update zod from ^4.6.7 to 4.6.7 ([416e5aa](https://github.com/sondresjolyst/pyttogpanne-app/commit/416e5aabd79120402eed6d7423dda7aee5c42f82))
+
 ## [1.1.4](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.3...v1.1.4) (2026-10-25)
 
 
