@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.6](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.5...v1.1.6) (2026-11-15)
+
+
+### Dependencies
+
+* **docker:** update node from 26.13.0-slim to 26.13.1-slim ([20a87f3](https://github.com/sondresjolyst/pyttogpanne-app/commit/20a87f35335c7b49fd941ba12c91dd0f051f39c5))
+* **npm:** update @sjolystinnovation/app-kit from ^1.6.1 to 1.6.1 ([2c56cb7](https://github.com/sondresjolyst/pyttogpanne-app/commit/2c56cb7f3c16f2475cfdc77246c50f6d71f35c1c))
+* **npm:** update axios from 1.20.0 to 1.21.0 ([6e67a2d](https://github.com/sondresjolyst/pyttogpanne-app/commit/6e67a2df1cf015a71a2da435dfdffd1405934766))
+* **npm:** update next from 16.4.2 to 16.4.5 ([6e67a2d](https://github.com/sondresjolyst/pyttogpanne-app/commit/6e67a2df1cf015a71a2da435dfdffd1405934766))
+
 ## [1.1.5](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.4...v1.1.5) (2026-11-08)
 
 
