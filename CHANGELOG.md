@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.7](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.6...v1.1.7) (2026-11-22)
+
+
+### Dependencies
+
+* **npm:** update @sjolystinnovation/app-kit from 1.6.1 to 1.7.0 ([71cc435](https://github.com/sondresjolyst/pyttogpanne-app/commit/71cc4356bb00b1a1c7361d0107ec8a673b8408ec))
+* **npm:** update axios from 1.21.0 to 1.21.1 ([3d8b59f](https://github.com/sondresjolyst/pyttogpanne-app/commit/3d8b59f87cf24612f1785e45615a6dee3e51d695))
+* **npm:** update next from 16.4.5 to 16.4.6 ([3d8b59f](https://github.com/sondresjolyst/pyttogpanne-app/commit/3d8b59f87cf24612f1785e45615a6dee3e51d695))
+
 ## [1.1.6](https://github.com/sondresjolyst/pyttogpanne-app/compare/v1.1.5...v1.1.6) (2026-11-15)
 
 
